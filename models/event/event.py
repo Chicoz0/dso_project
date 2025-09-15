@@ -1,7 +1,7 @@
 from datetime import datetime
 from models.event.age_rating import AgeRating
 from models.event.attraction import Attraction
-from models.event.location import Location
+from models.location.location import Location
 from models.event.tag import Tag
 
 

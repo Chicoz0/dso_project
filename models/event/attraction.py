@@ -2,10 +2,7 @@ from utils.id import generate_id
 
 
 class Attraction:
-    def __init__(self, id: int, name: str, attraction_type: str):
-        if not isinstance(id, int) or not id:
-            raise Exception("Invalid id")
-
+    def __init__(self, name: str, attraction_type: str):
         if not isinstance(name, str) or not name:
             raise Exception("Invalid name")
 

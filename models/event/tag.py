@@ -1,6 +1,6 @@
 class Tag:
     def __init__(self, name: str):
-        if not isinstance(name, str) and not name:
+        if not isinstance(name, str) or not name:
             raise Exception("Invalid name")
 
         self.__name = name

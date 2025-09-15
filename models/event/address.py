@@ -2,15 +2,15 @@ class Address:
     def __init__(
         self, street: str, suite: str, neighborhood: str, city: str, zip_code: str
     ):
-        if not isinstance(street, str) and not street:
+        if not isinstance(street, str) or not street:
             raise Exception("Invalid street")
-        if not isinstance(suite, str) and not suite:
+        if not isinstance(suite, str) or not suite:
             raise Exception("Invalid suite")
-        if not isinstance(neighborhood, str) and not neighborhood:
+        if not isinstance(neighborhood, str) or not neighborhood:
             raise Exception("Invalid neighborhood")
-        if not isinstance(city, str) and not city:
+        if not isinstance(city, str) or not city:
             raise Exception("Invalid city")
-        if not isinstance(zip_code, str) and not zip_code:
+        if not isinstance(zip_code, str) or not zip_code:
             raise Exception("Invalid zip_code")
 
         self.__street = street

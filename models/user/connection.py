@@ -8,7 +8,6 @@ class Connection:
         self.__user1 = user1
         self.__user2 = user2
         self.__status = status
-        self.__strikes = 3
 
     @property
     def user1(self):
@@ -21,10 +20,6 @@ class Connection:
     @property
     def status(self):
         return self.__status
-    
-    @property
-    def strikes(self):
-        return self.__strikes
 
     def accept_request(self, user: User):
         if user not in [self.__user1, self.__user2]:
@@ -36,5 +31,4 @@ class Connection:
         if user not in [self.__user1, self.__user2]:
             raise ValueError("Only a user in the connection can decline the request.")
         self.__status = ConnectionStatus.REJECTED
-        self.__strikes -= 1
-        print(f"Connection between {self.__user1.login} and {self.__user2.login} rejected. Trys left: {self.__strikes}.")
+        print(f"Connection between {self.__user1.login} and {self.__user2.login} rejected.")

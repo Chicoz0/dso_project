@@ -1,3 +1,6 @@
+from utils.id import generate_id
+
+
 class Address:
     def __init__(
         self, street: str, suite: str, neighborhood: str, city: str, zip_code: str
@@ -13,11 +16,16 @@ class Address:
         if not isinstance(zip_code, str) or not zip_code:
             raise Exception("Invalid zip_code")
 
+        self.__id = generate_id()
         self.__street = street
         self.__suite = suite
         self.__neighborhood = neighborhood
         self.__city = city
         self.__zip_code = zip_code
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def street(self):

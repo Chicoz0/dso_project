@@ -1,4 +1,4 @@
-from address import Address
+from models.location.address import Address
 
 
 class Location:

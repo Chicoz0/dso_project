@@ -9,7 +9,22 @@ class UserController():
         self.__user_view = LoggedUserView()
         self.__login_view = LoginView()
         self.__register_view = RegisterView()
-        self.__users = [] # Database
+
+        user003 = User(username='Normal_User_3', password='user_password_3', email='user3@example.com')
+        user001 = User(username='user', password='user', email='user')
+        user002 = User(username='Normal_User_2', password='user_password_2', email='user2@example.com')
+
+        self.__users = [user001, user002, user003] # Database
+
+    @property
+    def users(self):
+        return self.__users
+
+    def login(self, username, password):
+        for user in self.users:
+            if user.username == username and user.password == password:
+                return user
+        return None
 
     def register_user(self, username: str, password: str, email: str) -> User:
         if self.is_username_taken(username):

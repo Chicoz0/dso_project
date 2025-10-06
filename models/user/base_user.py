@@ -26,6 +26,10 @@ class BaseUser(ABC):
     @property
     def username(self):
         return self.__username
+    
+    @property
+    def password(self):
+        return self.__password
 
     def change_password(self, new_password: str, old_password: str):
         if not isinstance(new_password, str) or new_password is None:

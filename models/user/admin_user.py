@@ -1,10 +1,10 @@
-from base_user import BaseUser
+from models.user.base_user import BaseUser
+from models.user.user import User
 
 class AdminUser(BaseUser):
-    def __init__(self, login: str, password: str, email: str, is_admin: bool = True):
-        super().__init__(login, password, email)
-        self.__is_admin = is_admin
-
-    @property
-    def is_admin(self):
-        return self.__is_admin
+    def __init__(self, username: str, password: str, email: str):
+        super().__init__(username, password, email)
+    
+    # Inativa ou ativa uma conta de usuário
+    def change_user_status(self, user: User, new_status: bool):
+        return user.status(new_status)

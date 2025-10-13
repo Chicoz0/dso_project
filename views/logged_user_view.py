@@ -117,6 +117,9 @@ class LoggedUserView:
     def show_connection_already_exists(self):
         print("\nA connection between these users already exists.")
         return self.show_new_connection_request
+    
+    def show_connection_not_found(self, connection_id: int):
+        print (f"Connection with ID '{connection_id}' not found.")
 
     def show_edit_profile_menu(self):
         print("\n----- Edit Profile -----")

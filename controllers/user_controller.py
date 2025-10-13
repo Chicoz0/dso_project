@@ -1,16 +1,13 @@
-from controllers import main_controller
+from controllers.event_controller import EventController
 from models.user.user import User
-from views.login_view import LoginView
-from views.register_view import RegisterView
 from views.logged_user_view import LoggedUserView
 
 
 class UserController:
     def __init__(self, main_controller):
         self.__user_view = LoggedUserView()
-        # self.__login_view = LoginView()
-        # self.__register_view = RegisterView()
         self.__main_controller = main_controller
+        self.__event_controller = EventController(main_controller)
 
         user003 = User(
             username="Normal_User_3",
@@ -45,16 +42,19 @@ class UserController:
             if choice == "0":
                 self.__main_controller.logout_user()
                 self.__main_controller.start()
+            elif choice == "1":
+                self.__event_controller.show_event_view()
             elif choice == "2":
+                # ToDo connections
                 pass
-            elif choice == "4":
+            elif choice == "3":
                 self.__user_view.show_user_info_message(
                     self.__main_controller.logged_user.username,
                     self.__main_controller.logged_user.email,
                 )
-            elif choice == "5":
+            elif choice == "4":
                 self.load_edit_profile_view()
-            elif choice == "6":
+            elif choice == "5":
                 choice = self.__user_view.propmt_user_for_confirmation()
                 if choice == "1":
                     self.users.remove(self.__main_controller.logged_user)

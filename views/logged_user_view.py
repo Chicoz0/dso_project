@@ -1,12 +1,11 @@
 class LoggedUserView:
     def show_logged_user_menu(self, username: str):
         print(f"\n----- User Dashboard ({username}) -----")
-        print("1 - Browse and Filter Events")
-        print("2 - View My Attending Events")
-        print("3 - Manage Connections")
-        print("4 - Show User info")
-        print("5 - Edit Profile")
-        print("6 - Delete Account")
+        print("1 - Browse Events")
+        print("2 - Manage Connections")
+        print("3 - Show User info")
+        print("4 - Edit Profile")
+        print("5 - Delete Account")
         print("0 - Logout")
         choice = input("Choose an option: ")
         return choice

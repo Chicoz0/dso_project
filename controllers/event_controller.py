@@ -189,7 +189,7 @@ class EventController:
         else:
             self.__event_view.show_message(f"Event with ID {event_id} not found")
 
-    def delete_event(self):
+    def __delete_event(self):
         self.__list_events(self.__main_controller.logged_user)
 
         event_id = self.__event_view.prompt_user_event_id()

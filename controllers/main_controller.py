@@ -31,12 +31,12 @@ class MainController:
     def start(self):
         while True:
             choice = self.__main_view.show_welcome_menu()
-            if choice == "0":
+            if choice == 0:
                 self.__main_view.show_exit_message()
                 sys.exit()
-            elif choice == "1":
+            elif choice == 1:
                 self.handle_login()
-            elif choice == "2":
+            elif choice == 2:
                 self.handle_register()
             else:
                 self.__main_view.show_incorrect_value_message([0, 1, 2])

@@ -1,3 +1,4 @@
+from typing import Optional
 from models.event.tag import Tag
 
 from views.tag_view import TagView
@@ -24,7 +25,21 @@ class TagController:
                 return tag
         return None
 
-    def list_tags(self):
+    def select_tag_by_id(self):
+        tag_id = self.__tag_view.prompt_user_for_tag()
+        tag = self.get_tag_by_id(tag_id)
+
+        if tag:
+            return tag
+        self.__tag_view.show_message(f"Tag with ID {tag_id} not found")
+        return None
+
+    def show_tags(self, tags: list):
+        slugs = [tag.slug for tag in tags]
+        self.__tag_view.show_tags_one_line(slugs)
+
+    def list_tags(self, tags: Optional[list] = None):
+        tags = tags if tags else self.tags
         for tag in self.tags:
             self.__tag_view.show_tag(tag.id, tag.name, tag.slug)
 
@@ -43,8 +58,10 @@ class TagController:
 
         if not self.get_tag_by_name(tag_name):
             tag = Tag(tag_name)
+            self.tags.append(tag)
             self.__tag_view.show_message(
                 f"Tag ID {tag.id} and slug {tag.slug} created!"
             )
+            return
 
         self.__tag_view.show_message("Tag already existed!")

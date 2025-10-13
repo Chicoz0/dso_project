@@ -33,6 +33,27 @@ class EventView(GenericView):
         print(f"Description: {event_description}")
         print(f"Rating: {age_rating}")
 
+    def show_attractions_one_line(self, attractions: list):
+        print("Attractions: ", end="")
+        for attraction in attractions:
+            id = attraction.get("id")
+            name = attraction.get("name")
+            type = attraction.get("type")
+            print(f"ID: {id}, name: {name}, type: {type} -", end="")
+
+    def show_edit_event_menu(self, event_id: int):
+        print(f"----- Edit Event {event_id} -----")
+        print("1 - Edit name")
+        print("2 - Edit description")
+        print("3 - Edit date")
+        print("4 - Add tag")
+        print("5 - Remove tag")
+        print("6 - Add attraction")
+        print("0 - back")
+
+        choice = super().input_int("Choose: ")
+        return choice
+
     def show_age_rating(self, name, value):
         print(f"{value} - {name} ")
     
@@ -56,6 +77,13 @@ class EventView(GenericView):
         )
         return age_rating_value
 
+    def prompt_user_attraction_info(self):
+        print("\n----- Create Attraction -----")
+        name = super().input_string("Attraction name: ")
+        type = super().input_string("Attriaction type: ")
+
+        return name, type
+
     def prompt_event_info(self):
         print(f"\n ----- Event Creation -----")
         name = super().input_string("Insert event name: ")
@@ -65,7 +93,7 @@ class EventView(GenericView):
         return name, description, date
 
     def prompt_event_location_info(self):
-        print("f\n Where will the event happen?")
+        print("\nWhere will the event happen?")
         location_name = super().input_string("Location name: ")
         location_street = super().input_string("Street name: ")
         location_suite = super().input_string("Suite number: ")

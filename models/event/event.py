@@ -3,12 +3,16 @@ from models.event.age_rating import AgeRating
 from models.event.attraction import Attraction
 from models.location.location import Location
 from models.event.tag import Tag
+from models.user.user import User
+
+from utils.id import generate_id
 
 
 class Event:
     def __init__(
         self,
         name: str,
+        created_by: User,
         date: datetime,
         description: str,
         age_rating: AgeRating,
@@ -18,6 +22,8 @@ class Event:
             raise Exception("Invalid name")
         if not isinstance(date, datetime) or not date:
             raise Exception("Invalid date")
+        if not isinstance(created_by, User) or not created_by:
+            raise Exception("Invalid created by")
         if not isinstance(description, str) or not description:
             raise Exception("Invalid description")
         if not isinstance(age_rating, AgeRating) or not age_rating:
@@ -25,13 +31,19 @@ class Event:
         if not isinstance(location, Location) or not location:
             raise Exception("Invalid location")
 
+        self.__id = generate_id()
         self.__name = name
         self.__date = date
+        self.__created_by = created_by
         self.__description = description
         self.__age_rating = age_rating
         self.__location = location
         self.__tags = []
         self.__attractions = []
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def name(self):
@@ -52,6 +64,10 @@ class Event:
         if not isinstance(new_description, str) or not new_description:
             raise Exception("Invalid description")
         self.__description = new_description
+
+    @property
+    def created_by(self):
+        return self.__created_by
 
     @property
     def date(self):

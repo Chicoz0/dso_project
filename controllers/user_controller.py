@@ -1,16 +1,13 @@
-from controllers import main_controller
+from controllers.event_controller import EventController
 from models.user.user import User
-from views.login_view import LoginView
-from views.register_view import RegisterView
 from views.logged_user_view import LoggedUserView
 
 
 class UserController:
     def __init__(self, main_controller):
         self.__user_view = LoggedUserView()
-        # self.__login_view = LoginView()
-        # self.__register_view = RegisterView()
         self.__main_controller = main_controller
+        self.__event_controller = EventController(main_controller)
 
         user003 = User(
             username="Normal_User_3",
@@ -42,21 +39,23 @@ class UserController:
                 self.__main_controller.logged_user.username
             )
 
-            if choice == "0":
+            if choice == 0:
                 self.__main_controller.logout_user()
                 self.__main_controller.start()
-            elif choice == "2":
+            elif choice == 1:
+                self.__event_controller.show_event_view()
+            elif choice == 2:
+                # ToDo connections
                 pass
-            elif choice == "4":
+            elif choice == 3:
                 self.__user_view.show_user_info_message(
                     self.__main_controller.logged_user.username,
                     self.__main_controller.logged_user.email,
                 )
-            elif choice == "5":
+            elif choice == 4:
                 self.load_edit_profile_view()
-            elif choice == "6":
-                choice = self.__user_view.propmt_user_for_confirmation()
-                if choice == "1":
+            elif choice == 5:
+                if self.__user_view.propmt_user_yes_or_no():
                     self.users.remove(self.__main_controller.logged_user)
                     self.__main_controller.logout_user()
                     self.__user_view.show_operation_done_message()
@@ -65,9 +64,9 @@ class UserController:
     def load_edit_profile_view(self):
         choice = self.__user_view.show_edit_profile_menu()
 
-        if choice == "0":
+        if choice == 0:
             self.show_logged_user_view()
-        elif choice == "1":
+        elif choice == 1:
             username = self.__user_view.prompt_new_username()
             try:
                 self.change_username(username)
@@ -76,7 +75,7 @@ class UserController:
             self.__user_view.show_operation_done_message()
             self.load_edit_profile_view()
 
-        elif choice == "2":
+        elif choice == 2:
             password = self.__user_view.prompt_new_password()
             try:
                 self.change_password(password)
@@ -84,7 +83,7 @@ class UserController:
                 self.load_edit_profile_view()
             except ValueError as e:
                 self.__user_view.show_error_message(e)
-        elif choice == "3":
+        elif choice == 3:
             email = self.__user_view.prompt_new_email()
 
             try:

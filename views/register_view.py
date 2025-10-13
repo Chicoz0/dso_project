@@ -1,9 +1,12 @@
-class RegisterView:
+from views.generic_view import GenericView
+
+
+class RegisterView(GenericView):
     def show_register_menu(self):
         print("\n----- User Registration -----")
-        email = input("Enter your email: ")
-        username = input("Enter a new username: ")
-        password = input("Create a password: ")
+        email = super().input_string("Enter your email: ")
+        username = super().input_string("Enter a new username: ")
+        password = super().input_string("Create a password: ")
         return email, username, password
 
     def show_register_success_message(self, username: str):

@@ -1,5 +1,5 @@
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from models.event.attraction import Attraction
 from models.event.event import Event
 from models.event.event_attendence import EventAttendence
@@ -25,7 +25,7 @@ class EventController:
         event1 = Event(
             "Event 1",
             User("user 1", "", ""),
-            datetime.now(),
+            datetime.now() + timedelta(days=1),
             "Event 1 desc",
             AgeRating(1),
             Location("PIDA", "rua lauro", "450A", "Trindade", "Floripa", "0-009"),
@@ -106,6 +106,8 @@ class EventController:
 
             elif choice == 7:
                 self.__delete_event()
+            elif choice == 8:
+                self.__list_top_5_events()
 
     def __edit_event(self):
         # print("6 - Add attraction")
@@ -309,3 +311,20 @@ class EventController:
                 )
         else:
             self.__event_view.show_message(f"Event with ID {event_id} not found")
+    
+    # Report
+    def __list_top_5_events(self):
+        future_events = [event for event in self.events if event.date >= datetime.now()]
+
+        event_attendance_counts = {}
+        for event in future_events:
+            count = 0
+            for attendance in self.event_attendences:
+                if attendance.event.id == event.id:
+                    count += 1
+            event_attendance_counts[event] = count
+
+        sorted_events = sorted(event_attendance_counts.items(), key=lambda item: item[1], reverse=True)
+        top_5_events = sorted_events[:5]
+        self.__event_view.show_top_5_events_report(top_5_events)
+

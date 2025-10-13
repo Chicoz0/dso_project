@@ -1,5 +1,5 @@
-from connection_status import ConnectionStatus
-from user import User
+from models.user.connection_status import ConnectionStatus
+from models.user.user import User
 from utils.id import generate_id
 
 class Connection:
@@ -31,10 +31,8 @@ class Connection:
         if user not in [self.__user1, self.__user2]:
             raise ValueError("Only a user in the connection can accept the request.")   
         self.__status = ConnectionStatus.ACCEPTED
-        print(f"Connection between {self.__user1.login} and {self.__user2.login} accepted.")
 
     def decline_request(self, user: User):
         if user not in [self.__user1, self.__user2]:
             raise ValueError("Only a user in the connection can decline the request.")
         self.__status = ConnectionStatus.REJECTED
-        print(f"Connection between {self.__user1.login} and {self.__user2.login} rejected.")

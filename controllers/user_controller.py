@@ -1,4 +1,5 @@
 from controllers.event_controller import EventController
+from controllers.connection_controller import ConnectionController
 from models.user.user import User
 from views.logged_user_view import LoggedUserView
 
@@ -8,16 +9,17 @@ class UserController:
         self.__user_view = LoggedUserView()
         self.__main_controller = main_controller
         self.__event_controller = EventController(main_controller)
+        self.__connection_controller = ConnectionController(main_controller)
 
-        user003 = User(
-            username="Normal_User_3",
-            password="user_password_3",
-            email="user3@example.com",
-        )
         user001 = User(username="user", password="user", email="user")
         user002 = User(
-            username="Normal_User_2",
-            password="user_password_2",
+            username="user1",
+            password="user1",
+            email="user1@example.com",
+        )
+        user003 = User(
+            username="user2",
+            password="user2",
             email="user2@example.com",
         )
 
@@ -33,7 +35,11 @@ class UserController:
                 return user
         return None
 
-    def show_logged_user_view(self):
+    def load_logged_user_view(self):
+        
+        # Debug visual pra poder ver lista de users na tela principal
+        [print(user.id) for user in self.__users]
+        
         while True:
             choice = self.__user_view.show_logged_user_menu(
                 self.__main_controller.logged_user.username
@@ -45,8 +51,7 @@ class UserController:
             elif choice == 1:
                 self.__event_controller.show_event_view()
             elif choice == 2:
-                # ToDo connections
-                pass
+                self.__connection_controller.load_connections_menu()
             elif choice == 3:
                 self.__user_view.show_user_info_message(
                     self.__main_controller.logged_user.username,
@@ -65,7 +70,7 @@ class UserController:
         choice = self.__user_view.show_edit_profile_menu()
 
         if choice == 0:
-            self.show_logged_user_view()
+            self.load_logged_user_view()
         elif choice == 1:
             username = self.__user_view.prompt_new_username()
             try:

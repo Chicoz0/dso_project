@@ -27,6 +27,11 @@ class MainController:
     @property
     def logged_user(self):
         return self.__logged_user
+    
+    #Crime temporário
+    @property
+    def user_controller(self):
+        return self.__user_controller
 
     def start(self):
         while True:
@@ -52,10 +57,10 @@ class MainController:
 
         if user:
             self.__logged_user = user
-            self.__user_controller.show_logged_user_view()
+            self.__user_controller.load_logged_user_view()
         else:
             self.__login_view.show_login_attempt_fail_message()
-            self.handle_login()
+            return
 
     def handle_register(self):
         email, username, password = self.__register_view.show_register_menu()

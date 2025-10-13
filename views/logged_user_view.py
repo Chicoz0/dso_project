@@ -41,12 +41,8 @@ class LoggedUserView:
         for event_id, event_name in events:
             print(f"ID: {event_id} - {event_name}")
 
-        print(
-            "\nEnter a valid ID to view more details, or '0' to return to 'User Dashboard'."
-        )
-        return input(
-            "Enter your choice: "
-        )  # add opcao de retornar ao show_logged_user_menu
+        print("\nEnter a valid ID to view more details, or '0' to return to 'User Dashboard'."        )
+        return input("Enter your choice: ")  # add opcao de retornar ao show_logged_user_menu
 
     def show_attending_events(self, my_events: list):
         #  pede ao controlador a lista de eventos com presença do user
@@ -61,9 +57,7 @@ class LoggedUserView:
         for event_id, event_name in my_events:
             print(f"ID: {event_id} - {event_name}")
 
-        print(
-            "\nEnter a valid ID to view more details, or '0' to return to 'User Dashboard'."
-        )
+        print("\nEnter a valid ID to view more details, or '0' to return to 'User Dashboard'.")
         return input("Enter your choice: ")
 
     def show_connections_menu(self):
@@ -80,7 +74,7 @@ class LoggedUserView:
         print("\n----- My Connections -----")
         if not connections:
             print("You don't have any accepted connections yet.")
-            print("Press any key to return...")
+            print("Press any key to return...")
             return None  # return None deve ser entendido pelo controlador como show_connections_menu
 
         for user_id, username in connections:
@@ -91,26 +85,38 @@ class LoggedUserView:
             "Enter your choice: "
         )  # se ID correta, controlador direciona pra ConnectionView
 
+    def show_specific_connection(self, connection_id: str, user1_name: str, user2_name: str):
+        print("\n----- Connection Details -----")
+        print(f"Connection ID: {connection_id}")
+        print(f"Between: {user1_name} and {user2_name}")
+        print("1 - Accept Request")
+        print("2 - Decline Request")
+        print("0 - Return")
+        choice = input("Choose an option: ")
+        return choice
+    
     def show_pending_connection_requests(self, requests: list):
         # espera que requests seja uma lista de tuplas (user_id, username)
         print("\n----- Pending Connection Requests -----")
         if not requests:
             print("You don't have any pending requests.")
-            print("Press any key to return...")
+            print("Press any key to return...")
             return None  # return vazio deve ser entendido pelo controlador como show_connections_menu
 
         for user_id, username in requests:
             print(f"ID: {user_id} - {username}")
 
         print("\nChoose an ID to accept/reject, or enter '0' to return.")
-        return input(
-            "Enter your choice: "
-        )  # se ID correta, controlador direciona pra ConnectionView
+        return input("Enter your choice: ")
 
     def show_new_connection_request(self):
         print("\n----- Send New Connection Request -----")
         user_id = input("Enter the ID of the person you want to connect with: ")
         return user_id
+    
+    def show_connection_already_exists(self):
+        print("\nA connection between these users already exists.")
+        return self.show_new_connection_request
 
     def show_edit_profile_menu(self):
         print("\n----- Edit Profile -----")

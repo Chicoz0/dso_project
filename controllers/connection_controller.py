@@ -24,10 +24,3 @@ class ConnectionController:
                (connection.user1 == user2 and connection.user2 == user1):
                 return connection
         return None
-
-    def _find_connection_by_id(self, connection_id: str) -> Connection | None:
-        """(Private method) Finds a connection by its ID."""
-        for connection in self.__connections:
-            if connection.id == connection_id:
-                return connection
-        return None

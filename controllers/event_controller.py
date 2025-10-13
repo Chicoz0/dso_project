@@ -1,8 +1,10 @@
 from typing import Optional
 from datetime import datetime
+from models.event.attraction import Attraction
 from models.event.event import Event
 from models.event.event_attendence import EventAttendence
 from models.event.age_rating import AgeRating
+from models.event.tag import Tag
 from models.location.location import Location
 from models.user.user import User
 from views.event_view import EventView
@@ -46,6 +48,9 @@ class EventController:
             AgeRating(2),
             Location("PIDA", "rua lauro", "450A", "Trindade", "Floripa", "0-009"),
         )
+
+        event3.add_tag(Tag("test"))
+        event3.add_tag(Tag("Trying"))
 
         return [event1, event2, event3]
 
@@ -96,8 +101,47 @@ class EventController:
                 self.__events_user_attending()
             elif choice == 5:
                 self.__confirm_attendance()
+            elif choice == 6:
+                self.__edit_event()
+
             elif choice == 7:
                 self.__delete_event()
+
+    def __edit_event(self):
+        # print("6 - Add attraction")
+        # print("7 - Remove attraction")
+        self.__list_events(self.__main_controller.logged_user)
+        event_id = self.__event_view.prompt_user_event_id()
+
+        event = self.__find_event_by_id(event_id)
+
+        if event:
+            while True:
+                choice = self.__event_view.show_edit_event_menu(event.id)
+
+                if choice == 0:
+                    return
+                elif choice == 1:
+                    new_name = self.__event_view.input_string("\nNew event name: ")
+                    self.__edit_event_basic_info(event, name=new_name)
+                elif choice == 2:
+                    new_description = self.__event_view.input_string(
+                        "\nNew event description: "
+                    )
+                    self.__edit_event_basic_info(event, description=new_description)
+                elif choice == 3:
+                    new_date = self.__event_view.input_date("\nNew event date: ")
+                    self.__edit_event_basic_info(event, date=new_date)
+                elif choice == 4:
+                    self.__add_tag_to_event(event)
+                elif choice == 5:
+                    self.__remove_tag_from_event(event)
+                elif choice == 6:
+                    self.__add_attraction_to_event(event)
+        else:
+            self.__event_view.show_message(
+                f"Event with ID {event_id} not found or not authorized to edit"
+            )
 
     def __list_events(self, created_by: Optional[User] = None):
         self.__event_view.show_message("----- List Events -----")
@@ -111,6 +155,65 @@ class EventController:
                     event.description,
                     event.age_rating.name,
                 )
+                if event.tags:
+                    self.__tag_controller.show_tags(event.tags)
+                if event.attractions:
+                    self.__show_attractions(event)
+
+    def __show_attractions(self, event: Event):
+        attractions = [
+            {"id": a.id, "name": a.name, "type": a.attraction_type}
+            for a in event.attractions
+        ]
+        self.__event_view.show_attractions_one_line(attractions)
+
+    def __add_attraction_to_event(self, event: Event):
+        name, type = self.__event_view.prompt_user_attraction_info()
+        attraction = Attraction(name, type)
+        event.add_attraction(attraction)
+        self.__event_view.show_message(f"Attraction {attraction.name} created!")
+
+    def __remove_attraction_from_event(self, event: Event):
+        pass
+
+    def __add_tag_to_event(self, event: Event):
+        while True:
+            if self.__event_view.propmt_user_yes_or_no("Create tag?"):
+                self.__tag_controller.create_tag()
+
+            self.__tag_controller.list_tags()
+            tag = self.__tag_controller.select_tag_by_id()
+            if tag and tag not in event.tags:
+                event.add_tag(tag)
+                self.__event_view.show_message(f"Tag {tag.slug} added")
+            return
+
+    def __remove_tag_from_event(self, event: Event):
+        self.__tag_controller.list_tags(event.tags)
+        tag = self.__tag_controller.select_tag_by_id()
+
+        if tag in event.tags:
+            event.remove_tag(tag)
+            self.__event_view.show_message(f"Tag {tag.slug} removed!")
+        else:
+            self.__event_view.show_message(f"Tag not in event")
+
+    def __edit_event_basic_info(
+        self,
+        event: Event,
+        name: Optional[str] = None,
+        description: Optional[str] = None,
+        date: Optional[datetime] = None,
+    ):
+        if name:
+            event.name = name
+            self.__event_view.show_message("Name updated")
+        elif description:
+            event.description = description
+            self.__event_view.show_message("Description updated")
+        elif date:
+            event.date = date
+            self.__event_view.show_message("Date updated")
 
     def __create_event(self):
         name, description, date = self.__event_view.prompt_event_info()
@@ -197,7 +300,7 @@ class EventController:
 
         if event:
             if event.created_by == self.__main_controller.logged_user:
-                if self.__event_view.propmt_user_yes_or_no():
+                if self.__event_view.propmt_user_yes_or_no("Are you sure?"):
                     self.events.remove(event)
                     self.__event_view.show_message(f"Event with ID {event.id} deleted")
             else:

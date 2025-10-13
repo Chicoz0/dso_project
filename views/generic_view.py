@@ -6,8 +6,8 @@ class GenericView(ABC):
     def show_message(self, msg: str):
         print(f"\n{msg}")
 
-    def propmt_user_yes_or_no(self):
-        print("\nAre you sure?")
+    def propmt_user_yes_or_no(self, msg):
+        print(f"\n{msg}")
         print("1 - Yes")
         print("2 - No")
         while True:

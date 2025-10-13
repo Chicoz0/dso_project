@@ -38,7 +38,7 @@ class EventView(GenericView):
     
     # Report
     def show_top_5_events_report(self, events_with_counts: list):
-        print("\n----- Top 5 Events with most confirmations -----")
+        print("\n----- Top 5 Next Events with most confirmations -----")
         if not events_with_counts:
             print("No future events found with confirmations.")
             return

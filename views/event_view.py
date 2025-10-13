@@ -1,0 +1,71 @@
+from datetime import datetime
+from views.generic_view import GenericView
+
+
+class EventView(GenericView):
+    def show_events_menu(self):
+        print(f"\n----- Events -----")
+        print("1 - List all events")
+        print("2 - Create event")
+        print("3 - My events")
+        print("4 - Events I'm attending")
+        print("5 - Confirm attendance")
+        print("6 - Edit event")
+        print("7 - Delete event")
+        print("0 - back")
+        choice = self.input_int("Choose an option: ")
+        return choice
+
+    def show_event(
+        self,
+        event_id: int,
+        event_name: str,
+        event_creator: str,
+        event_date: datetime,
+        event_description: str,
+        age_rating: str,
+    ):
+        print(f"\nID: {event_id}")
+        print(f"Name: {event_name}")
+        print(f"Created By: {event_creator}")
+        print(f"Date: {event_date.date()}")
+        print(f"Description: {event_description}")
+        print(f"Rating: {age_rating}")
+
+    def show_age_rating(self, name, value):
+        print(f"{value} - {name} ")
+
+    def propmt_user_for_age_rating(self, valid_values):
+        age_rating_value = super().input_specific_int(
+            "Select an age rating for the Event: ", valid_values
+        )
+        return age_rating_value
+
+    def prompt_event_info(self):
+        print(f"\n ----- Event Creation -----")
+        name = super().input_string("Insert event name: ")
+        description = super().input_string("Insert event description: ")
+        date = super().input_date("Insert event date (DD/MM/YYYY): ")
+
+        return name, description, date
+
+    def prompt_event_location_info(self):
+        print("f\n Where will the event happen?")
+        location_name = super().input_string("Location name: ")
+        location_street = super().input_string("Street name: ")
+        location_suite = super().input_string("Suite number: ")
+        location_neighborhood = super().input_string("Neighborhood: ")
+        location_city = super().input_string("City: ")
+        location_zip_code = super().input_string("Zip Code: ")
+
+        return (
+            location_name,
+            location_street,
+            location_suite,
+            location_neighborhood,
+            location_city,
+            location_zip_code,
+        )
+
+    def prompt_user_event_id(self):
+        return super().input_int("\nSelect event ID: ")

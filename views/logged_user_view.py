@@ -23,73 +23,72 @@ class LoggedUserView(GenericView):
     def show_operation_done_message(self):
         print("Operation done!\n")
 
+    # ------ Connection related section -------
     def show_connections_menu(self):
         print("\n----- Connections Menu -----")
-        print("1 - View My Connections")
+        print("1 - View Accepted Connections")
         print("2 - View Pending Connection Requests")
         print("3 - Send a New Connection Request")
         print("0 - Return to User Dashboard")
         choice = super().input_int("Choose an option: ")
         return choice
 
-    def show_my_connections(self, connections: list):
-        # Espera que connections seja uma lista de tuplas (user_id, username)
-        print("\n----- My Connections -----")
+    def show_accepted_connections(self, connections: list):
+        # Espera que connections seja uma lista de tuplas (connection_id, username)
+        print("\n----- My Connections -----\n")
         if not connections:
             print("You don't have any accepted connections yet.")
-            print("Press any key to return...")
-            return None  # return None deve ser entendido pelo controlador como show_connections_menu
+            input("\nPress any key to return.")
+            return None
 
-        for user_id, username in connections:
-            print(f"ID: {user_id} - {username}")
+        for connection_id, username in connections:
+            print(f"ID: {connection_id} - Username: {username}")
+        
+        print("\nEnter a valid ID to dismiss a connection, or '0' to return.")
+        return super().input_int("Enter your choice: ")
 
-        print("\nEnter a valid ID to view more details, or '0' to return.")
-        return super().input_int(
-            "Enter your choice: "
-        )  # se ID correta, controlador direciona pra ConnectionView
-
-    def show_specific_connection(
-        self, connection_id: str, user1_name: str, user2_name: str
-    ):
+    def show_accepted_connection(
+        self, connection_id: int, user1_username: str, user2_username: str):
         print("\n----- Connection Details -----")
         print(f"Connection ID: {connection_id}")
-        print(f"Between: {user1_name} and {user2_name}")
-        print("1 - Accept Request")
-        print("2 - Decline Request")
+        print(f"Between: {user1_username} and {user2_username}")
+        print("1 - Dismiss Connection")
         print("0 - Return")
         choice = super().input_int("Choose an option: ")
         return choice
 
     def show_pending_connection_requests(self, requests: list):
-        # espera que requests seja uma lista de tuplas (user_id, username)
         print("\n----- Pending Connection Requests -----")
         if not requests:
             print("You don't have any pending requests.")
-            print("Press any key to return...")
-            return None  # return vazio deve ser entendido pelo controlador como show_connections_menu
+            input("\nPress any key to return...")
+            return None
 
-        for user_id, username in requests:
-            print(f"ID: {user_id} - {username}")
+        for connection_id, username in requests:
+            print(f"Connection ID: {connection_id} - Username: {username}")
 
-        print("\nChoose an ID to accept/reject, or enter '0' to return.")
-        return super().input_int(
-            "Enter your choice: "
-        )  # se ID correta, controlador direciona pra ConnectionView
+        print("\nChoose a ID to accept/reject, or enter '0' to return.")
+        return super().input_int("Enter your choice: ")
+
+    def show_accept_reject_connection_menu(self, username: str):
+        print(f"\nConnection Request from: {username}")
+        print("1 - Accept")
+        print("2 - Reject")
+        print("0 - Return")
+        return super().input_int("Choose an option: ")
 
     def show_new_connection_request(self):
         print("\n----- Send New Connection Request -----")
-        user_id = super().input_int(
-            "Enter the ID of the person you want to connect with: "
-        )
+        user_id = super().input_int("Enter the ID of the user you want to connect with or enter '0' to Return: ")
         return user_id
 
     def show_connection_already_exists(self):
         print("\nA connection between these users already exists.")
-        return self.show_new_connection_request
 
     def show_connection_not_found(self, connection_id: int):
         print(f"Connection with ID '{connection_id}' not found.")
 
+    # ----- Edit Profile related section -----
     def show_edit_profile_menu(self):
         print("\n----- Edit Profile -----")
         print("1 - Change Username")

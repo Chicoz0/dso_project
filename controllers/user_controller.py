@@ -3,6 +3,8 @@ from controllers.connection_controller import ConnectionController
 from models.user.user import User
 from views.logged_user_view import LoggedUserView
 
+import mock
+
 
 class UserController:
     def __init__(self, main_controller):
@@ -11,19 +13,7 @@ class UserController:
         self.__event_controller = EventController(main_controller)
         self.__connection_controller = ConnectionController(main_controller)
 
-        user001 = User(username="user", password="user", email="user")
-        user002 = User(
-            username="user1",
-            password="user1",
-            email="user1@example.com",
-        )
-        user003 = User(
-            username="user2",
-            password="user2",
-            email="user2@example.com",
-        )
-
-        self.__users = [user001, user002, user003]  # Database
+        self.__users = mock.all_users
 
     @property
     def users(self):
@@ -36,10 +26,6 @@ class UserController:
         return None
 
     def load_logged_user_view(self):
-        
-        # Debug visual pra poder ver lista de users na tela principal
-        [print(user.id) for user in self.__users]
-        
         while True:
             choice = self.__user_view.show_logged_user_menu(
                 self.__main_controller.logged_user.username
@@ -60,7 +46,7 @@ class UserController:
             elif choice == 4:
                 self.load_edit_profile_view()
             elif choice == 5:
-                if self.__user_view.propmt_user_yes_or_no():
+                if self.__user_view.propmt_user_yes_or_no("\nAre you sure?"):
                     self.users.remove(self.__main_controller.logged_user)
                     self.__main_controller.logout_user()
                     self.__user_view.show_operation_done_message()

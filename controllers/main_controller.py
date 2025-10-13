@@ -3,12 +3,8 @@ import sys
 from views.main_view import MainView
 from views.login_view import LoginView
 from views.register_view import RegisterView
-from views.logged_user_view import LoggedUserView
-from views.logged_admin_view import LoggedAdminView
-from views.connection_view import ConnectionView
 
 from controllers.user_controller import UserController
-from controllers.admin_controller import AdminController
 
 
 class MainController:
@@ -17,18 +13,13 @@ class MainController:
         self.__main_view = MainView()
         self.__login_view = LoginView()
         self.__register_view = RegisterView()
-        self.__logged_user_view = LoggedUserView()
-        self.__logged_admin_view = LoggedAdminView()
-        self.__connection_view = ConnectionView()
-
         self.__user_controller = UserController(self)
-        self.__admin_controller = AdminController()
 
     @property
     def logged_user(self):
         return self.__logged_user
-    
-    #Crime temporário
+
+    # Crime temporário
     @property
     def user_controller(self):
         return self.__user_controller

@@ -11,48 +11,17 @@ from views.event_view import EventView
 
 from controllers.tag_controller import TagController
 
+import mock
+
 
 class EventController:
     def __init__(self, main_controller):
-        self.__events = self.__mock_events()
+        self.__events = mock.all_events
         self.__locations = []
-        self.__event_attendances = []
+        self.__event_attendances = mock.all_attendences
         self.__event_view = EventView()
         self.__main_controller = main_controller
         self.__tag_controller = TagController()
-
-    def __mock_events(self):
-        event1 = Event(
-            "Event 1",
-            User("user 1", "", ""),
-            datetime.now() + timedelta(days=1),
-            "Event 1 desc",
-            AgeRating(1),
-            Location("PIDA", "rua lauro", "450A", "Trindade", "Floripa", "0-009"),
-        )
-
-        event2 = Event(
-            "Event 2",
-            User("user 1", "", ""),
-            datetime.now(),
-            "Event 2 desc",
-            AgeRating(3),
-            Location("PIDA", "rua lauro", "450A", "Trindade", "Floripa", "0-009"),
-        )
-
-        event3 = Event(
-            "Event 3",
-            User("user 2", "", ""),
-            datetime.now(),
-            "Event 3 desc",
-            AgeRating(2),
-            Location("PIDA", "rua lauro", "450A", "Trindade", "Floripa", "0-009"),
-        )
-
-        event3.add_tag(Tag("test"))
-        event3.add_tag(Tag("Trying"))
-
-        return [event1, event2, event3]
 
     @property
     def events(self):

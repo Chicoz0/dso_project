@@ -12,6 +12,7 @@ class EventView(GenericView):
         print("5 - Confirm attendance")
         print("6 - Edit event")
         print("7 - Delete event")
+        print("8 - Top 5 events with most confirmations")
         print("0 - back")
         choice = self.input_int("Choose an option: ")
         return choice
@@ -34,6 +35,20 @@ class EventView(GenericView):
 
     def show_age_rating(self, name, value):
         print(f"{value} - {name} ")
+    
+    # Report
+    def show_top_5_events_report(self, events_with_counts: list):
+        print("\n----- Top 5 Events with most confirmations -----")
+        if not events_with_counts:
+            print("No future events found with confirmations.")
+            return
+            
+        for i, (event, count) in enumerate(events_with_counts):
+            print(f"\n#{i+1}:")
+            print(f"ID: {event.id}")
+            print(f"Name: {event.name}")
+            print(f"Created By: {event.created_by.username}")
+            print(f"Confirmations: {count}")
 
     def propmt_user_for_age_rating(self, valid_values):
         age_rating_value = super().input_specific_int(

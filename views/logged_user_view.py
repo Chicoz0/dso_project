@@ -1,27 +1,59 @@
+import FreeSimpleGUI as sg
 from views.generic_view import GenericView
 
 
 class LoggedUserView(GenericView):
     def show_logged_user_menu(self, username: str):
-        print(f"\n----- User Dashboard ({username}) -----")
-        print("1 - Browse Events")
-        print("2 - Manage Connections")
-        print("3 - Show User info")
-        print("4 - Edit Profile")
-        print("5 - Delete Account")
-        print("0 - Logout")
-        choice = super().input_int("Choose an option: ")
-        return choice
+        # print(f"\n----- User Dashboard ({username}) -----")
+        # print("1 - Browse Events")
+        # print("2 - Manage Connections")
+        # print("3 - Show User info")
+        # print("4 - Edit Profile")
+        # print("5 - Delete Account")
+        # print("0 - Logout")
+        # choice = super().input_int("Choose an option: ")
+        # return choice
+
+        layout = [
+            [sg.Text(f'----- User Dashboard {username} -----', font=("Helvica",25))],
+            [sg.Text('What do you want to do?', font=("Helvica",15))],
+            [sg.Radio('Browse Events',"RD1", key='1')],
+            [sg.Radio('Manage Connections',"RD1", key='2')],
+            [sg.Radio('Show User info',"RD1", key='3')],
+            [sg.Radio('Edit profile',"RD1", key='4')],
+            [sg.Radio('Delete Account',"RD1", key='5')],
+            [sg.Radio('Exit',"RD1", key='0')],
+            [sg.Button('Confirm '), sg.Cancel('Cancel')]
+        ]
+        self.window = sg.Window('EventLink!').Layout(layout)
+
+        button, values = self.window.Read()
+        opcao = 0
+        if values['1']:
+            opcao = 1
+        if values['2']:
+            opcao = 2
+        if values['3']:
+            opcao = 3
+        if values['3']:
+            opcao = 3
+        if values['4']:
+            opcao = 4
+        if values['5']:
+            opcao = 5
+        if values['0'] or button in (None,'Cancelar'):
+            opcao = 0
+        self.close()
+        return opcao
 
     def show_error_message(self, error: Exception):
-        print(f"\nError: {error}\n")
+        self.popup(f"\nError: {error}\n")
 
     def show_user_info_message(self, username: str, email: str):
-        print(f"\nUsername: {username}")
-        print(f"Email: {email}\n")
+        self.popup(f"\nUsername: {username}\nEmail: {email}")
 
     def show_operation_done_message(self):
-        print("Operation done!\n")
+        self.popup("Operation done!\n")
 
     # ------ Connection related section -------
     def show_connections_menu(self):
@@ -90,12 +122,37 @@ class LoggedUserView(GenericView):
 
     # ----- Edit Profile related section -----
     def show_edit_profile_menu(self):
-        print("\n----- Edit Profile -----")
-        print("1 - Change Username")
-        print("2 - Change Password")
-        print("3 - Change Email")
-        print("0 - Return to Dashboard")
-        return super().input_int("Choose an option: ")
+        # print("\n----- Edit Profile -----")
+        # print("1 - Change Username")
+        # print("2 - Change Password")
+        # print("3 - Change Email")
+        # print("0 - Return to Dashboard")
+        # return super().input_int("Choose an option: ")
+
+        layout = [
+            [sg.Text(f'----- Edit Profile -----', font=("Helvica",25))],
+            [sg.Radio('Change Username',"RD1", key='1')],
+            [sg.Radio('Change Password',"RD1", key='2')],
+            [sg.Radio('Change Email',"RD1", key='3')],
+            [sg.Button('Confirm '), sg.Cancel('Cancel')]
+        ]
+        self.window = sg.Window('EventLink!').Layout(layout)
+
+        button, values = self.window.Read()
+        opcao = 0
+        if values['1']:
+            opcao = 1
+        if values['2']:
+            opcao = 2
+        if values['3']:
+            opcao = 3
+        if values['3']:
+            opcao = 3
+        if button in (None,'Cancel'):
+            opcao = 0
+        self.close()
+        return opcao
+
 
     def prompt_new_username(self):
         print("\n----- Change Username -----")

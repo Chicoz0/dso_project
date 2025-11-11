@@ -1,8 +1,33 @@
+import FreeSimpleGUI as sg
+
 from datetime import datetime
 from abc import ABC
 
 
 class GenericView(ABC):
+    def __init__(self):
+        self.__window = None
+
+    @property
+    def window(self):
+        return self.__window
+
+    @window.setter
+    def window(self, w):
+        self.__window = w
+
+    def popup(self, msg):
+        sg.popup("", msg)
+
+    def close(self):
+        if self.window:
+            self.window.Close()
+
+    def open(self):
+        if self.__window:
+            button, values = self.__window.Read()
+            return button, values
+
     def show_message(self, msg: str):
         print(f"\n{msg}")
 

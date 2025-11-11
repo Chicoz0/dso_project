@@ -48,6 +48,7 @@ class MainController:
 
         if user:
             self.__logged_user = user
+            self.__login_view.login_success()
             self.__user_controller.load_logged_user_view()
         else:
             self.__login_view.show_login_attempt_fail_message()

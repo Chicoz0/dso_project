@@ -1,47 +1,38 @@
 import FreeSimpleGUI as sg
+
 from views.generic_view import GenericView
 
 
 class LoggedUserView(GenericView):
     def show_logged_user_menu(self, username: str):
-        # print(f"\n----- User Dashboard ({username}) -----")
-        # print("1 - Browse Events")
-        # print("2 - Manage Connections")
-        # print("3 - Show User info")
-        # print("4 - Edit Profile")
-        # print("5 - Delete Account")
-        # print("0 - Logout")
-        # choice = super().input_int("Choose an option: ")
-        # return choice
-
         layout = [
-            [sg.Text(f'----- User Dashboard {username} -----', font=("Helvica",25))],
-            [sg.Text('What do you want to do?', font=("Helvica",15))],
-            [sg.Radio('Browse Events',"RD1", key='1')],
-            [sg.Radio('Manage Connections',"RD1", key='2')],
-            [sg.Radio('Show User info',"RD1", key='3')],
-            [sg.Radio('Edit profile',"RD1", key='4')],
-            [sg.Radio('Delete Account',"RD1", key='5')],
-            [sg.Radio('Exit',"RD1", key='0')],
-            [sg.Button('Confirm '), sg.Cancel('Cancel')]
+            [sg.Text(f"----- User Dashboard {username} -----", font=("Helvica", 25))],
+            [sg.Text("What do you want to do?", font=("Helvica", 15))],
+            [sg.Radio("Browse Events", "RD1", key="1")],
+            [sg.Radio("Manage Connections", "RD1", key="2")],
+            [sg.Radio("Show User info", "RD1", key="3")],
+            [sg.Radio("Edit profile", "RD1", key="4")],
+            [sg.Radio("Delete Account", "RD1", key="5")],
+            [sg.Radio("Exit", "RD1", key="0")],
+            [sg.Button("Confirm "), sg.Cancel("Cancel")],
         ]
-        self.window = sg.Window('EventLink!').Layout(layout)
+        self.window = sg.Window("EventLink!").Layout(layout)
 
-        button, values = self.window.Read()
+        button, values = self.read_window()
         opcao = 0
-        if values['1']:
+        if values["1"]:
             opcao = 1
-        if values['2']:
+        if values["2"]:
             opcao = 2
-        if values['3']:
+        if values["3"]:
             opcao = 3
-        if values['3']:
+        if values["3"]:
             opcao = 3
-        if values['4']:
+        if values["4"]:
             opcao = 4
-        if values['5']:
+        if values["5"]:
             opcao = 5
-        if values['0'] or button in (None,'Cancelar'):
+        if values["0"] or button in (None, "Cancelar"):
             opcao = 0
         self.close()
         return opcao
@@ -57,13 +48,30 @@ class LoggedUserView(GenericView):
 
     # ------ Connection related section -------
     def show_connections_menu(self):
-        print("\n----- Connections Menu -----")
-        print("1 - View Accepted Connections")
-        print("2 - View Pending Connection Requests")
-        print("3 - Send a New Connection Request")
-        print("0 - Return to User Dashboard")
-        choice = super().input_int("Choose an option: ")
-        return choice
+        layout = [
+            [sg.Text(f"----- Connection Meny  -----", font=("Helvica", 25))],
+            [sg.Text("What do you want to do?", font=("Helvica", 15))],
+            [sg.Radio("View Connections", "RD1", key="1")],
+            [sg.Radio("View Pending Connections Request", "RD1", key="2")],
+            [sg.Radio("Send a New Connection Request", "RD1", key="3")],
+            [sg.Button("Confirm "), sg.Cancel("Cancel")],
+        ]
+        self.window = sg.Window("EventLink!").Layout(layout)
+
+        button, values = self.read_window()
+        opcao = 0
+        if values["1"]:
+            opcao = 1
+        if values["2"]:
+            opcao = 2
+        if values["3"]:
+            opcao = 3
+        if values["3"]:
+            opcao = 3
+        if button in (None, "Cancel"):
+            opcao = 0
+        self.close()
+        return opcao
 
     def show_accepted_connections(self, connections: list):
         # Espera que connections seja uma lista de tuplas (connection_id, username)
@@ -75,12 +83,13 @@ class LoggedUserView(GenericView):
 
         for connection_id, username in connections:
             print(f"ID: {connection_id} - Username: {username}")
-        
+
         print("\nEnter a valid ID to dismiss a connection, or '0' to return.")
         return super().input_int("Enter your choice: ")
 
     def show_accepted_connection(
-        self, connection_id: int, user1_username: str, user2_username: str):
+        self, connection_id: int, user1_username: str, user2_username: str
+    ):
         print("\n----- Connection Details -----")
         print(f"Connection ID: {connection_id}")
         print(f"Between: {user1_username} and {user2_username}")
@@ -111,7 +120,9 @@ class LoggedUserView(GenericView):
 
     def show_new_connection_request(self):
         print("\n----- Send New Connection Request -----")
-        user_id = super().input_int("Enter the ID of the user you want to connect with or enter '0' to Return: ")
+        user_id = super().input_int(
+            "Enter the ID of the user you want to connect with or enter '0' to Return: "
+        )
         return user_id
 
     def show_connection_already_exists(self):
@@ -130,29 +141,28 @@ class LoggedUserView(GenericView):
         # return super().input_int("Choose an option: ")
 
         layout = [
-            [sg.Text(f'----- Edit Profile -----', font=("Helvica",25))],
-            [sg.Radio('Change Username',"RD1", key='1')],
-            [sg.Radio('Change Password',"RD1", key='2')],
-            [sg.Radio('Change Email',"RD1", key='3')],
-            [sg.Button('Confirm '), sg.Cancel('Cancel')]
+            [sg.Text(f"----- Edit Profile -----", font=("Helvica", 25))],
+            [sg.Radio("Change Username", "RD1", key="1")],
+            [sg.Radio("Change Password", "RD1", key="2")],
+            [sg.Radio("Change Email", "RD1", key="3")],
+            [sg.Button("Confirm "), sg.Cancel("Cancel")],
         ]
-        self.window = sg.Window('EventLink!').Layout(layout)
+        self.window = sg.Window("EventLink!").Layout(layout)
 
-        button, values = self.window.Read()
+        button, values = self.read_window()
         opcao = 0
-        if values['1']:
+        if values["1"]:
             opcao = 1
-        if values['2']:
+        if values["2"]:
             opcao = 2
-        if values['3']:
+        if values["3"]:
             opcao = 3
-        if values['3']:
+        if values["3"]:
             opcao = 3
-        if button in (None,'Cancel'):
+        if button in (None, "Cancel"):
             opcao = 0
         self.close()
         return opcao
-
 
     def prompt_new_username(self):
         print("\n----- Change Username -----")

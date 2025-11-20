@@ -23,10 +23,12 @@ class GenericView(ABC):
         if self.window:
             self.window.Close()
 
-    def open(self):
-        if self.__window:
-            button, values = self.__window.Read()
-            return button, values
+    def read_window(self):
+        button = 0
+        values = {}
+        if self.window:
+            button, values = self.window.Read()
+        return button, values
 
     def show_message(self, msg: str):
         print(f"\n{msg}")

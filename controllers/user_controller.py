@@ -2,8 +2,7 @@ from controllers.event_controller import EventController
 from controllers.connection_controller import ConnectionController
 from models.user.user import User
 from views.logged_user_view import LoggedUserView
-
-import mock
+from DAOs.user_dao import UserDAO
 
 
 class UserController:
@@ -13,16 +12,20 @@ class UserController:
         self.__event_controller = EventController(main_controller)
         self.__connection_controller = ConnectionController(main_controller)
 
-        self.__users = mock.all_users
+        self.__user_dao = UserDAO()
 
     @property
     def users(self):
-        return self.__users
+        return self.__user_dao.get_all()
 
     def login(self, username, password):
-        for user in self.users:
-            if user.username == username and user.password == password:
+        try:
+            user = self.__user_dao.get(username)
+            if isinstance(user, User) and user.password == password:
                 return user
+        except KeyError:
+            pass
+
         return None
 
     def load_logged_user_view(self):
@@ -47,7 +50,7 @@ class UserController:
                 self.load_edit_profile_view()
             elif choice == 5:
                 if self.__user_view.propmt_user_yes_or_no("\nAre you sure?"):
-                    self.users.remove(self.__main_controller.logged_user)
+                    self.__user_dao.remove(self.__main_controller.logged_user.username)
                     self.__main_controller.logout_user()
                     self.__user_view.show_operation_done_message()
                     self.__main_controller.start()
@@ -90,47 +93,55 @@ class UserController:
         if self.is_email_taken(email):
             raise ValueError(f"The email '{email}' is already in use.")
         new_user = User(username, password, email)
-        self.__users.append(new_user)
+        self.__user_dao.add(new_user)
         return new_user
 
     # Checa se um username já existe no database
     def is_username_taken(self, username: str) -> bool:
-        for user in self.__users:
-            if user.username == username:
-                return True
-        return False
+        try:
+            self.__user_dao.get(username)
+            return True
+        except KeyError:
+            return False
 
     # Checa se um email já existe no database
     def is_email_taken(self, email: str) -> bool:
-        for user in self.__users:
+        users = self.__user_dao.get_all()
+        for user in users:
             if user.email == email:
                 return True
         return False
 
-    # Acha um user pela ID
-    def find_user_by_id(self, user_id: int) -> User | None:
-        for user in self.__users:
-            if user.id == user_id:
-                return user
-        return None
-
     def change_password(self, new_password: str):
-        if self.__main_controller.logged_user:
-            self.__main_controller.logged_user.change_password(new_password)
+        user = self.__main_controller.logged_user
+        if user:
+            user.change_password(new_password)
+            self.__user_dao.update(user)
 
-    def change_email(self, new_email: str):
+    def change_email(self, new_email: str) -> bool:
         if self.is_email_taken(new_email):
             raise ValueError(f"The email '{new_email}' is already in use.")
-        if self.__main_controller.logged_user:
-            self.__main_controller.logged_user.change_email(new_email)
+        user = self.__main_controller.logged_user
+        if user:
+            user.email = new_email
+            self.__user_dao.update(user)
             return True
         return False
 
-    def change_username(self, new_username: str):
+    def change_username(self, new_username: str) -> bool:
         if self.is_username_taken(new_username):
             raise ValueError(f"The username '{new_username}' is already in use.")
-
-        if self.__main_controller.logged_user:
-            self.__main_controller.logged_user.change_username(new_username)
+        user = self.__main_controller.logged_user
+        if user:
+            old_username = user.username
+            self.__user_dao.remove(old_username)
+            user.username = new_username
+            self.__user_dao.add(user)
             return True
         return False
+
+    def find_user_by_username(self, username: str) -> User | None:
+        try:
+            return self.__user_dao.get(username)
+        except KeyError:
+            return None

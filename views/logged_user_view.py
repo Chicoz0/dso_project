@@ -170,10 +170,7 @@ class LoggedUserView(GenericView):
         return super().input_string("Enter new username: ")
 
     def prompt_new_password(self):
-        password = self.popup_get_text(
-            "Enter your new password:", title="Password Input"
-        )
-        return password if password else ""
+        return super().input_string("Enter your new password:")
 
     def prompt_new_email(self):
         return super().input_string("Enter new email: ")

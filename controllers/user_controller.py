@@ -127,7 +127,7 @@ class UserController:
             raise ValueError(f"The email '{new_email}' is already in use.")
         user = self.__main_controller.logged_user
         if user:
-            user.email = new_email
+            user.change_email(new_email)
             self.__user_dao.update(user)
             return True
         return False
@@ -139,7 +139,7 @@ class UserController:
         if user:
             old_username = user.username
             self.__user_dao.remove(old_username)
-            user.username = new_username
+            user.change_username(new_username)
             self.__user_dao.add(user)
             return True
         return False

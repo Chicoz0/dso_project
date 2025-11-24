@@ -4,6 +4,8 @@ from models.user.user import User
 from views.logged_user_view import LoggedUserView
 from DAOs.user_dao import UserDAO
 
+from exceptions.generic_exceptions import NotFoundException
+
 
 class UserController:
     def __init__(self, main_controller):
@@ -23,7 +25,7 @@ class UserController:
             user = self.__user_dao.get(username)
             if isinstance(user, User) and user.password == password:
                 return user
-        except KeyError:
+        except NotFoundException:
             pass
 
         return None
@@ -143,5 +145,6 @@ class UserController:
     def find_user_by_username(self, username: str) -> User | None:
         try:
             return self.__user_dao.get(username)
-        except KeyError:
+        except NotFoundException as e:
+            self.__user_view.show_error_message(e)
             return None

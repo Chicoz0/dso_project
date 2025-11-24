@@ -64,7 +64,7 @@ class GenericView(ABC):
         while True:
             value = sg.popup_get_text(msg, title="Input Required")
 
-            if value is None: # Cancel
+            if value is None:
                 return ""
 
             value = value.strip()

@@ -49,7 +49,7 @@ class LoggedUserView(GenericView):
     # ------ Connection related section -------
     def show_connections_menu(self):
         layout = [
-            [sg.Text(f"----- Connection Meny  -----", font=("Helvica", 25))],
+            [sg.Text(f"----- Connection Menu  -----", font=("Helvica", 25))],
             [sg.Text("What do you want to do?", font=("Helvica", 15))],
             [sg.Radio("View Connections", "RD1", key="1")],
             [sg.Radio("View Pending Connections Request", "RD1", key="2")],
@@ -59,6 +59,7 @@ class LoggedUserView(GenericView):
         self.window = sg.Window("EventLink!").Layout(layout)
 
         button, values = self.read_window()
+        self.close()
         opcao = 0
         if values["1"]:
             opcao = 1
@@ -66,11 +67,8 @@ class LoggedUserView(GenericView):
             opcao = 2
         if values["3"]:
             opcao = 3
-        if values["3"]:
-            opcao = 3
         if button in (None, "Cancel"):
             opcao = 0
-        self.close()
         return opcao
 
     def show_accepted_connections(self, connections: list):
@@ -87,7 +85,7 @@ class LoggedUserView(GenericView):
         return super().input_int("Enter the ID to dismiss (or 0 to return):")
 
     def show_accepted_connection(
-        self, connection_id: int, user1_username: str, user2_username: str
+        self, connection_id: int, user1: str, user2: str
     ):
         msg = (f"Connection ID: {connection_id}\n"
                f"Between: {user1} and {user2}\n\n"
@@ -124,8 +122,8 @@ class LoggedUserView(GenericView):
         return int(button)
 
     def show_new_connection_request(self):
-        user_id = super().input_int("Enter the ID of the user you want to connect with:")
-        return user_id if user_id is not None else 0
+        user_username = super().input_string("Enter the username of the user you want to connect with:")
+        return user_username if user_username is not None else 0
 
     def show_connection_already_exists(self):
         super().show_message("A connection between these users already exists.")

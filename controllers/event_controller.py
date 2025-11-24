@@ -270,7 +270,7 @@ class EventController:
             if event:
                 if event.created_by.id == self.__main_controller.logged_user.id:
                     if self.__event_view.propmt_user_yes_or_no("Are you sure?"):
-                        self.events_dao.remove(event)
+                        self.events_dao.remove(event.id)
                         self.__event_view.show_message(
                             f"Event with ID {event.id} deleted"
                         )

@@ -49,7 +49,7 @@ class LoggedUserView(GenericView):
     # ------ Connection related section -------
     def show_connections_menu(self):
         layout = [
-            [sg.Text(f"----- Connection Meny  -----", font=("Helvica", 25))],
+            [sg.Text(f"----- Connection Menu  -----", font=("Helvica", 25))],
             [sg.Text("What do you want to do?", font=("Helvica", 15))],
             [sg.Radio("View Connections", "RD1", key="1")],
             [sg.Radio("View Pending Connections Request", "RD1", key="2")],
@@ -59,6 +59,7 @@ class LoggedUserView(GenericView):
         self.window = sg.Window("EventLink!").Layout(layout)
 
         button, values = self.read_window()
+        self.close()
         opcao = 0
         if values["1"]:
             opcao = 1
@@ -66,80 +67,72 @@ class LoggedUserView(GenericView):
             opcao = 2
         if values["3"]:
             opcao = 3
-        if values["3"]:
-            opcao = 3
         if button in (None, "Cancel"):
             opcao = 0
-        self.close()
         return opcao
 
     def show_accepted_connections(self, connections: list):
-        # Espera que connections seja uma lista de tuplas (connection_id, username)
-        print("\n----- My Connections -----\n")
         if not connections:
-            print("You don't have any accepted connections yet.")
-            input("\nPress any key to return.")
+            super().show_message("You don't have any accepted connections yet.")
             return None
 
+        msg = ""
         for connection_id, username in connections:
-            print(f"ID: {connection_id} - Username: {username}")
+            msg += f"ID: {connection_id} - Username: {username}\n"
 
-        print("\nEnter a valid ID to dismiss a connection, or '0' to return.")
-        return super().input_int("Enter your choice: ")
+        sg.popup_scrolled(msg, title="My Connections", size=(40, 10))
+
+        return super().input_int("Enter the ID to dismiss (or 0 to return):")
 
     def show_accepted_connection(
-        self, connection_id: int, user1_username: str, user2_username: str
+        self, connection_id: int, user1: str, user2: str
     ):
-        print("\n----- Connection Details -----")
-        print(f"Connection ID: {connection_id}")
-        print(f"Between: {user1_username} and {user2_username}")
-        print("1 - Dismiss Connection")
-        print("0 - Return")
-        choice = super().input_int("Choose an option: ")
-        return choice
+        msg = (f"Connection ID: {connection_id}\n"
+               f"Between: {user1} and {user2}\n\n"
+               f"Do you want to DISMISS (remove) this connection?")
+
+        should_dismiss = super().propmt_user_yes_or_no(msg)
+        return 1 if should_dismiss else 0
 
     def show_pending_connection_requests(self, requests: list):
-        print("\n----- Pending Connection Requests -----")
         if not requests:
-            print("You don't have any pending requests.")
-            input("\nPress any key to return...")
+            super().show_message("You don't have any pending requests.")
             return None
 
+        msg = ""
         for connection_id, username in requests:
-            print(f"Connection ID: {connection_id} - Username: {username}")
+            msg += f"Connection ID: {connection_id} - Username: {username}\n"
 
-        print("\nChoose a ID to accept/reject, or enter '0' to return.")
-        return super().input_int("Enter your choice: ")
+        sg.popup_scrolled(msg, title="Pending Requests", size=(40, 10))
+
+        return super().input_int("Choose an ID to accept/reject, or enter '0' to return.")
 
     def show_accept_reject_connection_menu(self, username: str):
-        print(f"\nConnection Request from: {username}")
-        print("1 - Accept")
-        print("2 - Reject")
-        print("0 - Return")
-        return super().input_int("Choose an option: ")
+        layout = [
+            [sg.Text(f"Connection Request from: {username}", font=("Helvica", 15))],
+            [sg.Text("What do you want to do?")],
+            [sg.Button("Accept", key="1"), sg.Button("Reject", key="2"), sg.Button("Return", key="0")]
+        ]
+        self.window = sg.Window("Process Request").Layout(layout)
+        button, _ = self.read_window()
+        self.close()
+
+        if button in (None, "Return"): 
+            return 0
+        return int(button)
 
     def show_new_connection_request(self):
-        print("\n----- Send New Connection Request -----")
-        user_id = super().input_int(
-            "Enter the ID of the user you want to connect with or enter '0' to Return: "
-        )
-        return user_id
+        user_username = super().input_string("Enter the username of the user you want to connect with:")
+        return user_username if user_username is not None else 0
 
     def show_connection_already_exists(self):
-        print("\nA connection between these users already exists.")
+        super().show_message("A connection between these users already exists.")
 
     def show_connection_not_found(self, connection_id: int):
-        print(f"Connection with ID '{connection_id}' not found.")
+        super().show_message(f"Connection with ID '{connection_id}' not found.")
 
     # ----- Edit Profile related section -----
     def show_edit_profile_menu(self):
-        # print("\n----- Edit Profile -----")
-        # print("1 - Change Username")
-        # print("2 - Change Password")
-        # print("3 - Change Email")
-        # print("0 - Return to Dashboard")
-        # return super().input_int("Choose an option: ")
-
         layout = [
             [sg.Text(f"----- Edit Profile -----", font=("Helvica", 25))],
             [sg.Radio("Change Username", "RD1", key="1")],
@@ -157,24 +150,17 @@ class LoggedUserView(GenericView):
             opcao = 2
         if values["3"]:
             opcao = 3
-        if values["3"]:
-            opcao = 3
         if button in (None, "Cancel"):
             opcao = 0
         self.close()
         return opcao
 
     def prompt_new_username(self):
-        print("\n----- Change Username -----")
-        new_username = super().input_string("Enter new username: ")
-        return new_username
+        return super().input_string("Enter new username: ")
 
     def prompt_new_password(self):
-        print("\n----- Change Password -----")
-        password = super().input_string("Enter your new password: ")
-        return password
+        password = sg.popup_get_text("Enter your new password:", title="Password Input")
+        return password if password else ""
 
     def prompt_new_email(self):
-        print("\n----- Change Email -----")
-        new_email = super().input_string("Enter new email: ")
-        return new_email
+        return super().input_string("Enter new email: ")

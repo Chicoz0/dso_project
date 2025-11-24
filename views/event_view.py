@@ -4,18 +4,26 @@ from views.generic_view import GenericView
 
 class EventView(GenericView):
     def show_events_menu(self):
-        print(f"\n----- Events -----")
-        print("1 - List all events")
-        print("2 - Create event")
-        print("3 - My events")
-        print("4 - Events I'm attending")
-        print("5 - Confirm attendance")
-        print("6 - Edit event")
-        print("7 - Delete event")
-        print("8 - Top 5 events with most confirmations")
-        print("0 - back")
-        choice = self.input_int("Choose an option: ")
-        return choice
+        layout = [
+            [sg.Text("----- Events -----", font=("Helvica", 25))],
+            [sg.Button("List all events", key="1", size=(25, 1))],
+            [sg.Button("Create event", key="2", size=(25, 1))],
+            [sg.Button("My events", key="3", size=(25, 1))],
+            [sg.Button("Events I'm attending", key="4", size=(25, 1))],
+            [sg.Button("Confirm attendance", key="5", size=(25, 1))],
+            [sg.Button("Edit event", key="6", size=(25, 1))],
+            [sg.Button("Delete event", key="7", size=(25, 1))],
+            [sg.Button("Top 5 events (Report)", key="8", size=(25, 1))],
+            [sg.Button("Back", key="0", size=(25, 1), button_color=('white', 'firebrick3'))]
+        ]
+        self.window = sg.Window("EventLink - Events").Layout(layout)
+
+        button, _ = self.read_window()
+        self.close()
+
+        if button in (None, "Back"):
+            return 0
+        return int(button)
 
     def show_event(
         self,
@@ -26,89 +34,127 @@ class EventView(GenericView):
         event_description: str,
         age_rating: str,
     ):
-        print(f"\nID: {event_id}")
-        print(f"Name: {event_name}")
-        print(f"Created By: {event_creator}")
-        print(f"Date: {event_date.date()}")
-        print(f"Description: {event_description}")
-        print(f"Rating: {age_rating}")
+        msg = (
+            f"ID: {event_id}\n"
+            f"Name: {event_name}\n"
+            f"Created By: {event_creator}\n"
+            f"Date: {event_date.date()}\n"
+            f"Description: {event_description}\n"
+            f"Rating: {age_rating}"
+        )
+        sg.popup_scrolled(msg, title=f"Event Details: {event_name}", size=(50, 10))
 
     def show_attractions_one_line(self, attractions: list):
-        print("Attractions: ", end="")
+        msg = "Attractions List:\n\n"
         for attraction in attractions:
-            id = attraction.get("id")
-            name = attraction.get("name")
-            type = attraction.get("type")
-            print(f"ID: {id}, name: {name}, type: {type} -", end="")
+            msg += f"ID: {attraction.get('id')}, Name: {attraction.get('name')}, Type: {attraction.get('type')}\n"
+ 
+        sg.popup_scrolled(msg, title="Attractions")
 
     def show_edit_event_menu(self, event_id: int):
-        print(f"----- Edit Event {event_id} -----")
-        print("1 - Edit name")
-        print("2 - Edit description")
-        print("3 - Edit date")
-        print("4 - Add tag")
-        print("5 - Remove tag")
-        print("6 - Add attraction")
-        print("0 - back")
+        layout = [
+            [sg.Text(f"----- Edit Event {event_id} -----", font=("Helvica", 20))],
+            [sg.Button("Edit name", key="1", size=(20, 1))],
+            [sg.Button("Edit description", key="2", size=(20, 1))],
+            [sg.Button("Edit date", key="3", size=(20, 1))],
+            [sg.Button("Add tag", key="4", size=(20, 1))],
+            [sg.Button("Remove tag", key="5", size=(20, 1))],
+            [sg.Button("Add attraction", key="6", size=(20, 1))],
+            [sg.Button("Back", key="0", size=(20, 1))]
+        ]
+        self.window = sg.Window("Edit Menu").Layout(layout)
 
-        choice = super().input_int("Choose: ")
-        return choice
+        button, _ = self.read_window()
+        self.close()
+
+        if button in (None, "Back"):
+            return 0
+        return int(button)
 
     def show_age_rating(self, name, value):
-        print(f"{value} - {name} ")
-    
+        super().show_message(f"{value} - {name}")
+
     # Report
     def show_top_5_events_report(self, events_with_counts: list):
-        print("\n----- Top 5 Next Events with most confirmations -----")
         if not events_with_counts:
-            print("No future events found with confirmations.")
+            super().show_message("No future events found with confirmations.")
             return
-            
+ 
+        msg = "----- Top 5 Next Events with most confirmations -----\n\n"
         for i, (event, count) in enumerate(events_with_counts):
-            print(f"\n#{i+1}:")
-            print(f"ID: {event.id}")
-            print(f"Name: {event.name}")
-            print(f"Created By: {event.created_by.username}")
-            print(f"Confirmations: {count}")
+            msg += (
+                f"#{i+1}:\n"
+                f"ID: {event.id} | Name: {event.name}\n"
+                f"Created By: {event.created_by.username}\n"
+                f"Confirmations: {count}\n"
+                f"-----------------------------\n"
+            )
+        sg.popup_scrolled(msg, title="Top 5 Report", size=(50, 15))
 
     def propmt_user_for_age_rating(self, valid_values):
-        age_rating_value = super().input_specific_int(
-            "Select an age rating for the Event: ", valid_values
-        )
-        return age_rating_value
+        return super().input_specific_int("Select an age rating for the Event: ", valid_values)
 
     def prompt_user_attraction_info(self):
-        print("\n----- Create Attraction -----")
-        name = super().input_string("Attraction name: ")
-        type = super().input_string("Attriaction type: ")
+        layout = [
+            [sg.Text("Create Attraction", font=("Helvica", 15))],
+            [sg.Text("Name:"), sg.InputText(key="name")],
+            [sg.Text("Type:"), sg.InputText(key="type")],
+            [sg.Button("Confirm"), sg.Cancel()]
+        ]
+        self.window = sg.Window("New Attraction").Layout(layout)
+        button, values = self.read_window()
+        self.close()
 
-        return name, type
+        if button in (None, "Cancel"):
+            return None, None
+        return values["name"], values["type"]
 
     def prompt_event_info(self):
-        print(f"\n ----- Event Creation -----")
-        name = super().input_string("Insert event name: ")
-        description = super().input_string("Insert event description: ")
-        date = super().input_date("Insert event date (DD/MM/YYYY): ")
+        layout = [
+            [sg.Text("Create Event", font=("Helvica", 15))],
+            [sg.Text("Name:"), sg.InputText(key="name")],
+            [sg.Text("Description:"), sg.InputText(key="desc")],
+            [sg.Text("Date (DD/MM/YYYY):"), sg.InputText(key="date")],
+            [sg.Button("Confirm"), sg.Cancel()]
+        ]
+        self.window = sg.Window("New Event").Layout(layout)
 
-        return name, description, date
+        while True:
+            button, values = self.read_window()
+            if button in (None, "Cancel"):
+                self.close()
+                return None, None, None
+            
+            try:
+                date_obj = datetime.strptime(values["date"], "%d/%m/%Y")
+                self.close()
+                return values["name"], values["desc"], date_obj
+            except ValueError:
+                sg.popup("Invalid Date format! Use DD/MM/YYYY")
 
     def prompt_event_location_info(self):
-        print("\nWhere will the event happen?")
-        location_name = super().input_string("Location name: ")
-        location_street = super().input_string("Street name: ")
-        location_suite = super().input_string("Suite number: ")
-        location_neighborhood = super().input_string("Neighborhood: ")
-        location_city = super().input_string("City: ")
-        location_zip_code = super().input_string("Zip Code: ")
+        layout = [
+            [sg.Text("Event Location", font=("Helvica", 15))],
+            [sg.Text("Location Name:"), sg.InputText(key="loc_name")],
+            [sg.Text("Street Name:"), sg.InputText(key="street")],
+            [sg.Text("Suite/Number:"), sg.InputText(key="suite")],
+            [sg.Text("Neighborhood:"), sg.InputText(key="neighborhood")],
+            [sg.Text("City:"), sg.InputText(key="city")],
+            [sg.Text("Zip Code:"), sg.InputText(key="zip")],
+            [sg.Button("Confirm"), sg.Cancel()]
+        ]
+        self.window = sg.Window("Location Info").Layout(layout)
+        
+        button, values = self.read_window()
+        self.close()
+
+        if button in (None, "Cancel"):
+            return "", "", "", "", "", ""
 
         return (
-            location_name,
-            location_street,
-            location_suite,
-            location_neighborhood,
-            location_city,
-            location_zip_code,
+            values["loc_name"], values["street"], values["suite"],
+            values["neighborhood"], values["city"], values["zip"]
         )
 
     def prompt_user_event_id(self):
-        return super().input_int("\nSelect event ID: ")
+        return super().input_int("Select event ID: ")

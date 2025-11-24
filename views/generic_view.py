@@ -31,51 +31,57 @@ class GenericView(ABC):
         return button, values
 
     def show_message(self, msg: str):
-        print(f"\n{msg}")
+        sg.popup(msg, title="Info")
 
     def propmt_user_yes_or_no(self, msg):
-        print(f"\n{msg}")
-        print("1 - Yes")
-        print("2 - No")
-        while True:
-            value = self.input_int("Select: ")
-            if value != 1 and value != 2:
-                print("\nSelect a valid option")
-            else:
-                return True if value == 1 else False
+        answer = sg.popup_yes_no(msg, title="Question")
+        return True if answer == "Yes" else False
 
     def input_int(self, msg):
         while True:
-            try:
-                value = input(msg)
-                int_value = int(value)
-                return int_value
+            value = sg.popup_get_text(msg, title="Input Required")
+ 
+            if value is None:
+                return None
 
+            try:
+                return int(value)
             except ValueError:
-                print("\n Please provide a valid int value")
+                sg.popup("Please provide a valid integer value")
 
     def input_specific_int(self, msg: str, valid_ints: list):
         while True:
-            value = self.input_int(msg)
+            value = self.input_int(f"{msg}\nValid options: {valid_ints}")
+            if value is None:
+                return None
+
             if value not in valid_ints:
-                print(f"\n Please provide a valid number, valid {valid_ints}")
+                sg.popup(f"Please provide a valid number from: {valid_ints}")
             else:
                 return value
 
     def input_string(self, msg):
         while True:
-            value = input(msg)
+            value = sg.popup_get_text(msg, title="Input Required")
+
+            if value is None:
+                return ""
+
             value = value.strip()
             if value:
                 return value
             else:
-                print("\n Provide a non empty text value")
+                sg.popup("Provide a non-empty text value")
 
     def input_date(self, msg):
         while True:
-            input_date = input(msg)
+            input_date = sg.popup_get_text(f"{msg} (Format: DD/MM/YYYY)", title="Date Input")
+ 
+            if input_date is None:
+                return None
+
             try:
                 date = datetime.strptime(input_date, "%d/%m/%Y")
                 return date
             except ValueError:
-                print(f"\n Please provide a valid date on format DD/MM/YYYY\n")
+                sg.popup("Please provide a valid date in format DD/MM/YYYY")

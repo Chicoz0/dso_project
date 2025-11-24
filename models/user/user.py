@@ -19,4 +19,8 @@ class User(BaseUser):
             raise f"{self.__username} status is already {'active' if status else 'inactive'}."
         else:
             self.__status == status
-            return f"{self.__username} status has been changed to {'active' if status else 'inactive'}."
+
+    def __eq__(self, x):
+        if isinstance(x, User):
+            return self.username == x.username
+        return False

@@ -16,11 +16,7 @@ class EventView(GenericView):
             [self.button_key("Edit event", key="6")],
             [self.button_key("Delete event", key="7")],
             [self.button_key("Top 5 events (Report)", key="8")],
-            [
-                self.button_key(
-                    "Back", key="0"
-                )
-            ],
+            [self.button_key("Back", key="0")],
         ]
         self.window = sg.Window("EventLink - Events").Layout(layout)
 
@@ -156,7 +152,7 @@ class EventView(GenericView):
             [self.input_title("Name:"), self.input_text(key="name")],
             [self.input_title("Description:"), self.input_text(key="desc")],
             [self.input_title("Date (DD/MM/YYYY):"), self.input_text(key="date")],
-            [self.confirm(), self.cancel()],
+            [self.confirm()],
         ]
         self.window = sg.Window("New Event").Layout(layout)
 
@@ -182,7 +178,7 @@ class EventView(GenericView):
             [self.input_title("Neighborhood:"), self.input_text(key="neighborhood")],
             [self.input_title("City:"), self.input_text(key="city")],
             [self.input_title("Zip Code:"), self.input_text(key="zip")],
-            [self.confirm(), self.cancel()],
+            [self.confirm()],
         ]
         self.window = sg.Window("Location Info").Layout(layout)
 

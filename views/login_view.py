@@ -20,7 +20,7 @@ class LoginView(GenericView):
                 self.input_title("Enter password:"),
                 self.input_text("password"),
             ],
-            [self.confirm(), self.cancel()],
+            [self.confirm()],
         ]
         self.window = sg.Window("EventLink").Layout(layout)
 

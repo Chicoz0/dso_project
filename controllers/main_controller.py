@@ -57,8 +57,11 @@ class MainController:
     def handle_register(self):
         email, username, password = self.__register_view.show_register_menu()
 
-        try:
-            user = self.__user_controller.register_user(username, password, email)
-            self.__register_view.show_register_success_message(user.username)
-        except ValueError as e:
-            self.__register_view.show_register_error(e)
+        if email and username and password:
+            try:
+                user = self.__user_controller.register_user(username, password, email)
+                self.__register_view.show_register_success_message(user.username)
+            except ValueError as e:
+                self.__register_view.show_register_error(e)
+        else:
+            self.__register_view.show_message(f"Invalid user info")

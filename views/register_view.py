@@ -9,7 +9,7 @@ class RegisterView(GenericView):
             [self.input_title("Email:"), self.input_text("email")],
             [self.input_title("Username:"), self.input_text("username")],
             [self.input_title("Password:"), self.input_text("password")],
-            [self.confirm(), self.cancel()],
+            [self.confirm()],
         ]
         self.window = sg.Window("EventLink").Layout(layout)
 

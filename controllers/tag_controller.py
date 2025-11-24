@@ -3,31 +3,27 @@ from models.event.tag import Tag
 
 from views.tag_view import TagView
 
+from DAOs.tag_dao import TagDAO
+
 
 class TagController:
     def __init__(self):
-        self.__tags = []
+        self.__tags_dao = TagDAO()
         self.__tag_view = TagView()
 
     @property
-    def tags(self):
-        return self.__tags
-
-    def __get_tag_by_id(self, id: int):
-        for tag in self.tags:
-            if tag.id == id:
-                return tag
-        return None
+    def tags_dao(self):
+        return self.__tags_dao
 
     def __get_tag_by_name(self, name: str):
-        for tag in self.tags:
+        for tag in self.tags_dao.get_all():
             if tag.name == name:
                 return tag
         return None
 
     def select_tag_by_id(self):
         tag_id = self.__tag_view.prompt_user_for_tag()
-        tag = self.__get_tag_by_id(tag_id)
+        tag = self.tags_dao.get(tag_id)
 
         if tag:
             return tag
@@ -39,18 +35,10 @@ class TagController:
         self.__tag_view.show_tags_one_line(slugs)
 
     def list_tags(self, tags: Optional[list] = None):
-        tags = tags if tags else self.tags
-        for tag in self.tags:
-            self.__tag_view.show_tag(tag.id, tag.name, tag.slug)
-
-    def __delete_tag(self, id: int):
-        tag = self.__get_tag_by_id(id)
-        if tag:
-            self.tags.remove(tag)
-            self.__tag_view.show_message(f"Tag with ID {tag.id} deleted!")
-        else:
-            self.__tag_view.show_message(f"Tag with ID {id} not found!")
-        return
+        tags = tags if tags else self.tags_dao.get_all()
+        if tags:
+            for tag in tags:
+                self.__tag_view.show_tag(tag.id, tag.name, tag.slug)
 
     def create_tag(self):
         tag_name = self.__tag_view.prompt_user_for_tag_info()
@@ -58,7 +46,7 @@ class TagController:
 
         if not self.__get_tag_by_name(tag_name):
             tag = Tag(tag_name)
-            self.tags.append(tag)
+            self.tags_dao.add(tag)
             self.__tag_view.show_message(
                 f"Tag ID {tag.id} and slug {tag.slug} created!"
             )

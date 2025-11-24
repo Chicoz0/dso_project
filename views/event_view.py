@@ -1,6 +1,8 @@
 from datetime import datetime
 from views.generic_view import GenericView
 
+import FreeSimpleGUI as sg
+
 
 class EventView(GenericView):
     def show_events_menu(self):
@@ -14,7 +16,11 @@ class EventView(GenericView):
             [sg.Button("Edit event", key="6", size=(25, 1))],
             [sg.Button("Delete event", key="7", size=(25, 1))],
             [sg.Button("Top 5 events (Report)", key="8", size=(25, 1))],
-            [sg.Button("Back", key="0", size=(25, 1), button_color=('white', 'firebrick3'))]
+            [
+                sg.Button(
+                    "Back", key="0", size=(25, 1), button_color=("white", "firebrick3")
+                )
+            ],
         ]
         self.window = sg.Window("EventLink - Events").Layout(layout)
 
@@ -44,11 +50,37 @@ class EventView(GenericView):
         )
         sg.popup_scrolled(msg, title=f"Event Details: {event_name}", size=(50, 10))
 
+    def show_events(self, events):
+        if events:
+            msg = []
+            for e in events:
+                event_id = e.get("event_id")
+                even_name = e.get("event_name")
+                event_creator = e.get("event_creator")
+                event_date = e.get("event_date")
+                event_description = e.get("event_description")
+                age_rating = e.get("age_rating")
+                tags_msg = ""
+
+                for t in e.get("event_tags"):
+                    name = t.get("tag_name")
+                    m = f"Tag Name: {name}"
+                    tags_msg += m
+
+                msg.append(
+                    f"ID: {event_id}\nName: {even_name}\nCreated By: {event_creator}\nDate: {event_date}\nDescription: {event_description}\nRating: {age_rating}\nTags:\n{tags_msg}"
+                )
+
+            str_msg = "\n\n".join(msg)
+            sg.popup_scrolled(str_msg, title="Event Details")
+        else:
+            self.popup("No events found!")
+
     def show_attractions_one_line(self, attractions: list):
         msg = "Attractions List:\n\n"
         for attraction in attractions:
             msg += f"ID: {attraction.get('id')}, Name: {attraction.get('name')}, Type: {attraction.get('type')}\n"
- 
+
         sg.popup_scrolled(msg, title="Attractions")
 
     def show_edit_event_menu(self, event_id: int):
@@ -60,7 +92,7 @@ class EventView(GenericView):
             [sg.Button("Add tag", key="4", size=(20, 1))],
             [sg.Button("Remove tag", key="5", size=(20, 1))],
             [sg.Button("Add attraction", key="6", size=(20, 1))],
-            [sg.Button("Back", key="0", size=(20, 1))]
+            [sg.Button("Back", key="0", size=(20, 1))],
         ]
         self.window = sg.Window("Edit Menu").Layout(layout)
 
@@ -71,15 +103,22 @@ class EventView(GenericView):
             return 0
         return int(button)
 
-    def show_age_rating(self, name, value):
-        super().show_message(f"{value} - {name}")
+    def show_age_ratings(self, ratings):
+        msg = []
+        for r in ratings:
+            value = r.get("value")
+            name = r.get("name")
+            s = f"{value} - {name}"
+            msg.append(s)
+        m = "\n".join(msg)
+        super().show_message(m)
 
     # Report
     def show_top_5_events_report(self, events_with_counts: list):
         if not events_with_counts:
             super().show_message("No future events found with confirmations.")
             return
- 
+
         msg = "----- Top 5 Next Events with most confirmations -----\n\n"
         for i, (event, count) in enumerate(events_with_counts):
             msg += (
@@ -92,14 +131,16 @@ class EventView(GenericView):
         sg.popup_scrolled(msg, title="Top 5 Report", size=(50, 15))
 
     def propmt_user_for_age_rating(self, valid_values):
-        return super().input_specific_int("Select an age rating for the Event: ", valid_values)
+        return super().input_specific_int(
+            "Select an age rating for the Event: ", valid_values
+        )
 
     def prompt_user_attraction_info(self):
         layout = [
             [sg.Text("Create Attraction", font=("Helvica", 15))],
             [sg.Text("Name:"), sg.InputText(key="name")],
             [sg.Text("Type:"), sg.InputText(key="type")],
-            [sg.Button("Confirm"), sg.Cancel()]
+            [sg.Button("Confirm"), sg.Cancel()],
         ]
         self.window = sg.Window("New Attraction").Layout(layout)
         button, values = self.read_window()
@@ -115,7 +156,7 @@ class EventView(GenericView):
             [sg.Text("Name:"), sg.InputText(key="name")],
             [sg.Text("Description:"), sg.InputText(key="desc")],
             [sg.Text("Date (DD/MM/YYYY):"), sg.InputText(key="date")],
-            [sg.Button("Confirm"), sg.Cancel()]
+            [sg.Button("Confirm"), sg.Cancel()],
         ]
         self.window = sg.Window("New Event").Layout(layout)
 
@@ -124,7 +165,7 @@ class EventView(GenericView):
             if button in (None, "Cancel"):
                 self.close()
                 return None, None, None
-            
+
             try:
                 date_obj = datetime.strptime(values["date"], "%d/%m/%Y")
                 self.close()
@@ -141,10 +182,10 @@ class EventView(GenericView):
             [sg.Text("Neighborhood:"), sg.InputText(key="neighborhood")],
             [sg.Text("City:"), sg.InputText(key="city")],
             [sg.Text("Zip Code:"), sg.InputText(key="zip")],
-            [sg.Button("Confirm"), sg.Cancel()]
+            [sg.Button("Confirm"), sg.Cancel()],
         ]
         self.window = sg.Window("Location Info").Layout(layout)
-        
+
         button, values = self.read_window()
         self.close()
 
@@ -152,8 +193,12 @@ class EventView(GenericView):
             return "", "", "", "", "", ""
 
         return (
-            values["loc_name"], values["street"], values["suite"],
-            values["neighborhood"], values["city"], values["zip"]
+            values["loc_name"],
+            values["street"],
+            values["suite"],
+            values["neighborhood"],
+            values["city"],
+            values["zip"],
         )
 
     def prompt_user_event_id(self):

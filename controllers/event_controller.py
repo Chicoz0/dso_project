@@ -10,47 +10,48 @@ from models.user.user import User
 from views.event_view import EventView
 
 from controllers.tag_controller import TagController
-
-import mock
+from DAOs.event_dao import EventDAO
+from DAOs.event_attendence_dao import EventAttendenceDAO
+from DAOs.location_dao import LocationDAO
 
 
 class EventController:
     def __init__(self, main_controller):
-        self.__events = mock.all_events
-        self.__locations = []
-        self.__event_attendances = mock.all_attendences
+        self.__events_dao = EventDAO()
+        self.__locations_dao = LocationDAO()
+        self.__event_attendances_dao = EventAttendenceDAO()
         self.__event_view = EventView()
         self.__main_controller = main_controller
         self.__tag_controller = TagController()
 
     @property
-    def events(self):
-        return self.__events
+    def events_dao(self):
+        return self.__events_dao
 
     @property
-    def locations(self):
-        return self.__locations
+    def locations_dao(self):
+        return self.__locations_dao
 
     @property
-    def event_attendences(self):
-        return self.__event_attendances
+    def event_attendences_dao(self):
+        return self.__event_attendances_dao
 
     def __find_event_by_id(self, id: int):
-        for event in self.events:
-            if event.id == id:
-                return event
-        return None
+        try:
+            return self.__events_dao.get(id)
+        except:
+            return
 
     def __find_event_attendence_by_user_event(self, user: User, event: Event):
-        for attendance in self.event_attendences:
-            if attendance.user == user and attendance.event == event:
+        for attendance in self.event_attendences_dao.get_all():
+            if attendance.user.id == user.id and attendance.event.id == event.id:
                 return attendance
         return None
 
     def __find_events_user_is_attending(self):
         events = []
-        for attendance in self.event_attendences:
-            if attendance.user == self.__main_controller.logged_user:
+        for attendance in self.event_attendences_dao.get_all():
+            if attendance.user.id == self.__main_controller.logged_user.id:
                 events.append(attendance.event)
         return events
 
@@ -79,70 +80,68 @@ class EventController:
                 self.__list_top_5_events()
 
     def __edit_event(self):
-        # print("6 - Add attraction")
-        # print("7 - Remove attraction")
         self.__list_events(self.__main_controller.logged_user)
         event_id = self.__event_view.prompt_user_event_id()
 
-        event = self.__find_event_by_id(event_id)
+        if event_id:
+            event = self.__find_event_by_id(event_id)
+            if event and event.created_by.id == self.__main_controller.logged_user.id:
+                while True:
+                    choice = self.__event_view.show_edit_event_menu(event.id)
 
-        if event:
-            while True:
-                choice = self.__event_view.show_edit_event_menu(event.id)
+                    if choice == 0:
+                        return
+                    elif choice == 1:
+                        new_name = self.__event_view.input_string("\nNew event name: ")
+                        self.__edit_event_basic_info(event, name=new_name)
+                    elif choice == 2:
+                        new_description = self.__event_view.input_string(
+                            "\nNew event description: "
+                        )
+                        self.__edit_event_basic_info(event, description=new_description)
+                    elif choice == 3:
+                        new_date = self.__event_view.input_date("\nNew event date: ")
+                        self.__edit_event_basic_info(event, date=new_date)
+                    elif choice == 4:
+                        self.__add_tag_to_event(event)
+                    elif choice == 5:
+                        self.__remove_tag_from_event(event)
+                    elif choice == 6:
+                        self.__add_attraction_to_event(event)
+            else:
+                self.__event_view.show_message(
+                    f"Event with ID {event_id} not found or not authorized to edit"
+                )
 
-                if choice == 0:
-                    return
-                elif choice == 1:
-                    new_name = self.__event_view.input_string("\nNew event name: ")
-                    self.__edit_event_basic_info(event, name=new_name)
-                elif choice == 2:
-                    new_description = self.__event_view.input_string(
-                        "\nNew event description: "
-                    )
-                    self.__edit_event_basic_info(event, description=new_description)
-                elif choice == 3:
-                    new_date = self.__event_view.input_date("\nNew event date: ")
-                    self.__edit_event_basic_info(event, date=new_date)
-                elif choice == 4:
-                    self.__add_tag_to_event(event)
-                elif choice == 5:
-                    self.__remove_tag_from_event(event)
-                elif choice == 6:
-                    self.__add_attraction_to_event(event)
-        else:
-            self.__event_view.show_message(
-                f"Event with ID {event_id} not found or not authorized to edit"
-            )
+    def __event_to_json(self, event: Event):
+        return {
+            "event_id": event.id,
+            "event_name": event.name,
+            "event_creator": event.created_by.username,
+            "event_date": event.date.date(),
+            "event_description": event.description,
+            "age_rating": event.age_rating,
+            "event_tags": [{"tag_id": t.id, "tag_name": t.name} for t in event.tags],
+            "event_attractions": [
+                {"attraction_id": a.id, "attraction_type": a.attraction_type}
+                for a in event.attractions
+            ],
+        }
 
     def __list_events(self, created_by: Optional[User] = None):
-        self.__event_view.show_message("----- List Events -----")
-        for event in self.events:
-            if not created_by or event.created_by == created_by:
-                self.__event_view.show_event(
-                    event.id,
-                    event.name,
-                    event.created_by.username,
-                    event.date,
-                    event.description,
-                    event.age_rating.name,
-                )
-                if event.tags:
-                    self.__tag_controller.show_tags(event.tags)
-                if event.attractions:
-                    self.__show_attractions(event)
+        events = []
 
-    def __show_attractions(self, event: Event):
-        attractions = [
-            {"id": a.id, "name": a.name, "type": a.attraction_type}
-            for a in event.attractions
-        ]
-        self.__event_view.show_attractions_one_line(attractions)
+        for event in self.events_dao.get_all():
+            if not created_by or event.created_by.id == created_by.id:
+                events.append(self.__event_to_json(event))
+        self.__event_view.show_events(events)
 
     def __add_attraction_to_event(self, event: Event):
         name, type = self.__event_view.prompt_user_attraction_info()
-        attraction = Attraction(name, type)
-        event.add_attraction(attraction)
-        self.__event_view.show_message(f"Attraction {attraction.name} created!")
+        if name and type:
+            attraction = Attraction(name, type)
+            event.add_attraction(attraction)
+            self.__event_view.show_message(f"Attraction {attraction.name} created!")
 
     def __add_tag_to_event(self, event: Event):
         while True:
@@ -153,6 +152,7 @@ class EventController:
             tag = self.__tag_controller.select_tag_by_id()
             if tag and tag not in event.tags:
                 event.add_tag(tag)
+                self.events_dao.update(event)
                 self.__event_view.show_message(f"Tag {tag.slug} added")
             return
 
@@ -162,6 +162,7 @@ class EventController:
 
         if tag in event.tags:
             event.remove_tag(tag)
+            self.events_dao.update(event)
             self.__event_view.show_message(f"Tag {tag.slug} removed!")
         else:
             self.__event_view.show_message(f"Tag not in event")
@@ -182,6 +183,7 @@ class EventController:
         elif date:
             event.date = date
             self.__event_view.show_message("Date updated")
+        self.events_dao.update(event)
 
     def __create_event(self):
         name, description, date = self.__event_view.prompt_event_info()
@@ -198,9 +200,10 @@ class EventController:
         location = Location(
             l_name, l_street, l_suite, l_neighborhood, l_city, l_zip_code
         )
+        self.locations_dao.add(location)
 
-        for age_rating in AgeRating:
-            self.__event_view.show_age_rating(age_rating.name, age_rating.value)
+        ratings = [{"name": a.name, "value": a.value} for a in AgeRating]
+        self.__event_view.show_age_ratings(ratings)
 
         age_rating_value = self.__event_view.propmt_user_for_age_rating(
             [a.value for a in AgeRating]
@@ -208,31 +211,26 @@ class EventController:
 
         age_rating_event = AgeRating(age_rating_value)
 
-        event = Event(
-            name,
-            self.__main_controller.logged_user,
-            date,
-            description,
-            age_rating_event,
-            location,
-        )
+        if name and date and description:
+            event = Event(
+                name,
+                self.__main_controller.logged_user,
+                date,
+                description,
+                age_rating_event,
+                location,
+            )
 
-        self.events.append(event)
-        self.__event_view.show_message(f"Event with ID {event.id} created!")
+            self.events_dao.add(event)
+            self.__event_view.show_message(f"Event with ID {event.id} created!")
 
     def __events_user_attending(self):
         events = self.__find_events_user_is_attending()
         if events:
-            self.__event_view.show_message("Events user's attending:")
+            all_json = []
             for event in events:
-                self.__event_view.show_event(
-                    event.id,
-                    event.name,
-                    event.created_by.username,
-                    event.date,
-                    event.description,
-                    event.age_rating.name,
-                )
+                all_json.append(self.__event_to_json(event))
+            self.__event_view.show_events(all_json)
         else:
             self.__event_view.show_message("User isn't attending any events!")
 
@@ -241,51 +239,58 @@ class EventController:
 
         event_id = self.__event_view.prompt_user_event_id()
 
-        self.__event_view.show_message("Select event to confirm attendance")
-        event = self.__find_event_by_id(event_id)
+        if event_id:
+            event = self.__find_event_by_id(event_id)
 
-        if event:
-            if self.__find_event_attendence_by_user_event(
-                self.__main_controller.logged_user, event
-            ):
+            if event:
+                if self.__find_event_attendence_by_user_event(
+                    self.__main_controller.logged_user, event
+                ):
+                    self.__event_view.show_message(
+                        f"Already confirmed attendance for event ID {event.id}!"
+                    )
+                    return
+
+                attendance = EventAttendence(self.__main_controller.logged_user, event)
+                self.event_attendences_dao.add(attendance)
                 self.__event_view.show_message(
-                    f"Already confirmed attendance for event ID {event.id}!"
+                    f"Attendance confirmed for event {event.id}"
                 )
-                return
 
-            attendance = EventAttendence(self.__main_controller.logged_user, event)
-            self.event_attendences.append(attendance)
-            self.__event_view.show_message(f"Attendance confirmed for event {event.id}")
-
-        else:
-            self.__event_view.show_message(f"Event with ID {event_id} not found")
+            else:
+                self.__event_view.show_message(f"Event with ID {event_id} not found")
 
     def __delete_event(self):
         self.__list_events(self.__main_controller.logged_user)
 
         event_id = self.__event_view.prompt_user_event_id()
-        event = self.__find_event_by_id(event_id)
+        if event_id:
+            event = self.__find_event_by_id(event_id)
 
-        if event:
-            if event.created_by == self.__main_controller.logged_user:
-                if self.__event_view.propmt_user_yes_or_no("Are you sure?"):
-                    self.events.remove(event)
-                    self.__event_view.show_message(f"Event with ID {event.id} deleted")
+            if event:
+                if event.created_by.id == self.__main_controller.logged_user.id:
+                    if self.__event_view.propmt_user_yes_or_no("Are you sure?"):
+                        self.events_dao.remove(event)
+                        self.__event_view.show_message(
+                            f"Event with ID {event.id} deleted"
+                        )
+                else:
+                    self.__event_view.show_message(
+                        f"No permission to delete with with ID {event.id}"
+                    )
             else:
-                self.__event_view.show_message(
-                    f"No permission to delete with with ID {event.id}"
-                )
-        else:
-            self.__event_view.show_message(f"Event with ID {event_id} not found")
+                self.__event_view.show_message(f"Event with ID {event_id} not found")
 
     # Report
     def __list_top_5_events(self):
-        future_events = [event for event in self.events if event.date >= datetime.now()]
+        future_events = [
+            event for event in self.events_dao.get_all() if event.date >= datetime.now()
+        ]
 
         event_attendance_counts = {}
         for event in future_events:
             count = 0
-            for attendance in self.event_attendences:
+            for attendance in self.event_attendences_dao.get_all():
                 if attendance.event.id == event.id:
                     count += 1
             event_attendance_counts[event] = count

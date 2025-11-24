@@ -1,4 +1,4 @@
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 
 class Address:
@@ -16,7 +16,7 @@ class Address:
         if not isinstance(zip_code, str) or not zip_code:
             raise Exception("Invalid zip_code")
 
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
         self.__street = street
         self.__suite = suite
         self.__neighborhood = neighborhood

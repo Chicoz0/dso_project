@@ -37,6 +37,9 @@ class DAO(ABC):
         except KeyError:
             raise NotFoundException
 
+    def get_keys(self):
+        return self.__cache.keys()
+
     def remove(self, key):
         try:
             self.__cache.pop(key)

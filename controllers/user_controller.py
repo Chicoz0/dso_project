@@ -103,7 +103,7 @@ class UserController:
         try:
             self.__user_dao.get(username)
             return True
-        except KeyError:
+        except NotFoundException:
             return False
         except NotFoundException:
             return False

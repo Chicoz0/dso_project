@@ -123,7 +123,10 @@ class LoggedUserView(GenericView):
 
     def show_new_connection_request(self):
         user_username = super().input_string("Enter the username of the user you want to connect with:")
-        return user_username if user_username is not None else 0
+        if not user_username or user_username == "0":
+            return "0"
+            
+        return user_username
 
     def show_connection_already_exists(self):
         super().show_message("A connection between these users already exists.")

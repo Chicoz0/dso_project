@@ -188,6 +188,10 @@ class EventController:
     def __create_event(self):
         name, description, date = self.__event_view.prompt_event_info()
 
+        while not name or not description or not date:
+            self.__event_view.show_message("Invalid event feilds!")
+            name, description, date = self.__event_view.prompt_event_info()
+
         (
             l_name,
             l_street,
@@ -196,6 +200,24 @@ class EventController:
             l_city,
             l_zip_code,
         ) = self.__event_view.prompt_event_location_info()
+
+        while (
+            not l_name
+            or not l_street
+            or not l_suite
+            or not l_neighborhood
+            or not l_city
+            or not l_zip_code
+        ):
+            self.__event_view.show_message("Invalid location fields")
+            (
+                l_name,
+                l_street,
+                l_suite,
+                l_neighborhood,
+                l_city,
+                l_zip_code,
+            ) = self.__event_view.prompt_event_location_info()
 
         location = Location(
             l_name, l_street, l_suite, l_neighborhood, l_city, l_zip_code

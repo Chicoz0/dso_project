@@ -3,15 +3,25 @@ from generic_view import GenericView
 
 class ConnectionView(GenericView):
     def show_connection_details(self, connection_data: dict):
-        print("\n----- Connection Details -----")
-        print(f"Connection ID: {connection_data['id']}")
-        print(f"Status: {connection_data['status']}")
-        print(
+        details_text = (
+            f"Connection ID: {connection_data['id']}\n"
+            f"Status: {connection_data['status']}\n"
             f"Users involved: {connection_data['user1_name']} and {connection_data['user2_name']}"
         )
 
-        print("\nWhat do you want to do?")
-        print("1 - Dismiss Connection")
-        print("0 - Return to the Connections Menu")
+        layout = [
+            [sg.Text("----- Connection Details -----", font=("Helvica", 20))],
+            [sg.Text(details_text, font=("Helvica", 12))],
+            [sg.Text("What do you want to do?", pad=(0, 20))],
+            [sg.Button("Dismiss Connection", key="1"), sg.Button("Return to Menu", key="0")]
+        ]
 
-        return super().input_string("Your choice: ")
+        self.window = sg.Window("Connection Details").Layout(layout)
+
+        button, _ = self.read_window()
+        self.close()
+
+        if button in (None, "0"):
+            return "0"
+
+        return "1"

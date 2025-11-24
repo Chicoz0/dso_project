@@ -1,4 +1,5 @@
 from models.location.address import Address
+from DAOs.ids_dao import UniversalID
 
 
 class Location:
@@ -29,8 +30,13 @@ class Location:
         if not isinstance(zip_code, str) or not zip_code:
             raise Exception("Invalid zip_code")
 
+        self.__id = UniversalID().get_id()
         self.__name = name
         self.__address = Address(street, suite, neighborhood, city, zip_code)
+
+    @property
+    def id(self):
+        return self.__id
 
     @property
     def name(self):

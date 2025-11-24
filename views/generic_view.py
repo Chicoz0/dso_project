@@ -11,6 +11,12 @@ class GenericView(ABC):
     @property
     def window(self):
         return self.__window
+    
+    def button(self, msg, key):
+        return sg.Button(msg, key, size=(40, 1))
+
+    def radio(self, text, group, key):
+        return sg.Radio(text, group, key, size=(40, 1) )
 
     @window.setter
     def window(self, w):

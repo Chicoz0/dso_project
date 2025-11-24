@@ -1,4 +1,4 @@
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 
 class Attraction:
@@ -9,7 +9,7 @@ class Attraction:
         if not isinstance(attraction_type, str) or not attraction_type:
             raise Exception("Invalid Attraction Type")
 
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
         self.__name = name
         self.__attraction_type = attraction_type
 

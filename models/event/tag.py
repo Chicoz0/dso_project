@@ -1,4 +1,4 @@
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 
 class Tag:
@@ -6,7 +6,7 @@ class Tag:
         if not isinstance(name, str) or not name:
             raise Exception("Invalid name")
 
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
         self.__name = name
         self.__slug = self.generate_slug(name)
 

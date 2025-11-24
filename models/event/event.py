@@ -5,7 +5,7 @@ from models.location.location import Location
 from models.event.tag import Tag
 from models.user.user import User
 
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 
 class Event:
@@ -31,7 +31,7 @@ class Event:
         if not isinstance(location, Location) or not location:
             raise Exception("Invalid location")
 
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
         self.__name = name
         self.__date = date
         self.__created_by = created_by

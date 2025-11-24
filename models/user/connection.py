@@ -1,6 +1,6 @@
 from models.user.connection_status import ConnectionStatus
 from models.user.user import User
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 from exceptions.connection_exceptions import (
     UserNotInConnectionException,
@@ -25,7 +25,7 @@ class Connection:
         self.__user1 = user1
         self.__user2 = user2
         self.__status = status
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
 
     @property
     def user1(self):

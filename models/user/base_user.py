@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from utils.id import generate_id
+from DAOs.ids_dao import UniversalID
 
 
 class BaseUser(ABC):
@@ -11,7 +11,7 @@ class BaseUser(ABC):
             raise ValueError("Password must be a string and not null")
         if not isinstance(email, str) or email is None:
             raise ValueError("E-mail must be a string and not null")
-        self.__id = generate_id()
+        self.__id = UniversalID().get_id()
         self.__password = password
         self.__email = email
         self.__username = username

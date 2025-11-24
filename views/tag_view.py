@@ -12,7 +12,7 @@ class TagView(GenericView):
 
     def show_tags_one_line(self, tags: list):
         msg = " - ".join(tags)
-        sg.popup_scrolled(f"Tags List:\n{msg}", title="Tags")
+        self.popup_scrolled(f"Tags List:\n{msg}", title="Tags")
 
     def prompt_user_for_tag_info(self) -> str:
         return super().input_string("Enter Tag Name:")

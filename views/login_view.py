@@ -11,16 +11,16 @@ class LoginView(GenericView):
 
     def show_login_menu(self):
         layout = [
-            [sg.Text("-------- User Login ----------", font=("Helvica", 25))],
+            [self.header("-------- User Login ----------")],
             [
-                sg.Text("Enter username:", size=(15, 1)),
-                sg.InputText("", key="username"),
+                self.input_title("Enter username:"),
+                self.input_text("username"),
             ],
             [
-                sg.Text("Enter password:", size=(15, 1)),
-                sg.InputText("", key="password"),
+                self.input_title("Enter password:"),
+                self.input_text("password"),
             ],
-            [sg.Button("Confirm"), sg.Cancel("Cancel")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("EventLink").Layout(layout)
 

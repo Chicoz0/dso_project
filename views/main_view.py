@@ -5,12 +5,12 @@ import FreeSimpleGUI as sg
 class MainView(GenericView):
     def show_welcome_menu(self):
         layout = [
-            [sg.Text("Welcome to EventLink!", font=("Helvica", 25))],
-            [sg.Text("What do you want to do?", font=("Helvica", 15))],
-            [sg.Radio("Login", "RD1", key="1")],
-            [sg.Radio("Register", "RD1", key="2")],
-            [sg.Radio("Exit", "RD1", key="0")],
-            [sg.Button("Confirmar"), sg.Cancel("Cancelar")],
+            [self.header("Welcome to EventLink!")],
+            [self.title("What do you want to do?")],
+            [self.radio("Login", "RD1", key="1")],
+            [self.radio("Register", "RD1", key="2")],
+            [self.radio("Exit", "RD1", key="0")],
+            [self.button("Confirmar"), self.cancel()],
         ]
         self.window = sg.Window("EventLink!").Layout(layout)
 

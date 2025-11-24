@@ -1,3 +1,4 @@
+import FreeSimpleGUI as sg
 from generic_view import GenericView
 
 
@@ -10,10 +11,10 @@ class ConnectionView(GenericView):
         )
 
         layout = [
-            [sg.Text("----- Connection Details -----", font=("Helvica", 20))],
-            [sg.Text(details_text, font=("Helvica", 12))],
-            [sg.Text("What do you want to do?", pad=(0, 20))],
-            [sg.Button("Dismiss Connection", key="1"), sg.Button("Return to Menu", key="0")]
+            [self.header("----- Connection Details -----")],
+            [self.title(details_text)],
+            [self.title("What do you want to do?")],
+            [self.button_key("Dismiss Connection", key="1"), self.button_key("Return to Menu", key="0")]
         ]
 
         self.window = sg.Window("Connection Details").Layout(layout)

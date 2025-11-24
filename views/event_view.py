@@ -7,18 +7,18 @@ import FreeSimpleGUI as sg
 class EventView(GenericView):
     def show_events_menu(self):
         layout = [
-            [sg.Text("----- Events -----", font=("Helvica", 25))],
-            [sg.Button("List all events", key="1", size=(25, 1))],
-            [sg.Button("Create event", key="2", size=(25, 1))],
-            [sg.Button("My events", key="3", size=(25, 1))],
-            [sg.Button("Events I'm attending", key="4", size=(25, 1))],
-            [sg.Button("Confirm attendance", key="5", size=(25, 1))],
-            [sg.Button("Edit event", key="6", size=(25, 1))],
-            [sg.Button("Delete event", key="7", size=(25, 1))],
-            [sg.Button("Top 5 events (Report)", key="8", size=(25, 1))],
+            [self.header("----- Events -----")],
+            [self.button_key("List all events", key="1")],
+            [self.button_key("Create event", key="2")],
+            [self.button_key("My events", key="3")],
+            [self.button_key("Events I'm attending", key="4")],
+            [self.button_key("Confirm attendance", key="5")],
+            [self.button_key("Edit event", key="6")],
+            [self.button_key("Delete event", key="7")],
+            [self.button_key("Top 5 events (Report)", key="8")],
             [
-                sg.Button(
-                    "Back", key="0", size=(25, 1), button_color=("white", "firebrick3")
+                self.button_key(
+                    "Back", key="0"
                 )
             ],
         ]
@@ -48,7 +48,7 @@ class EventView(GenericView):
             f"Description: {event_description}\n"
             f"Rating: {age_rating}"
         )
-        sg.popup_scrolled(msg, title=f"Event Details: {event_name}", size=(50, 10))
+        self.popup_scrolled(msg, title=f"Event Details: {event_name}")
 
     def show_events(self, events):
         if events:
@@ -72,7 +72,7 @@ class EventView(GenericView):
                 )
 
             str_msg = "\n\n".join(msg)
-            sg.popup_scrolled(str_msg, title="Event Details")
+            self.popup_scrolled(str_msg, title="Event Details")
         else:
             self.popup("No events found!")
 
@@ -81,18 +81,18 @@ class EventView(GenericView):
         for attraction in attractions:
             msg += f"ID: {attraction.get('id')}, Name: {attraction.get('name')}, Type: {attraction.get('type')}\n"
 
-        sg.popup_scrolled(msg, title="Attractions")
+        self.popup_scrolled(msg, title="Attractions")
 
     def show_edit_event_menu(self, event_id: int):
         layout = [
-            [sg.Text(f"----- Edit Event {event_id} -----", font=("Helvica", 20))],
-            [sg.Button("Edit name", key="1", size=(20, 1))],
-            [sg.Button("Edit description", key="2", size=(20, 1))],
-            [sg.Button("Edit date", key="3", size=(20, 1))],
-            [sg.Button("Add tag", key="4", size=(20, 1))],
-            [sg.Button("Remove tag", key="5", size=(20, 1))],
-            [sg.Button("Add attraction", key="6", size=(20, 1))],
-            [sg.Button("Back", key="0", size=(20, 1))],
+            [self.header(f"----- Edit Event {event_id} -----")],
+            [self.button_key("Edit name", key="1")],
+            [self.button_key("Edit description", key="2")],
+            [self.button_key("Edit date", key="3")],
+            [self.button_key("Add tag", key="4")],
+            [self.button_key("Remove tag", key="5")],
+            [self.button_key("Add attraction", key="6")],
+            [self.button_key("Back", key="0")],
         ]
         self.window = sg.Window("Edit Menu").Layout(layout)
 
@@ -128,7 +128,7 @@ class EventView(GenericView):
                 f"Confirmations: {count}\n"
                 f"-----------------------------\n"
             )
-        sg.popup_scrolled(msg, title="Top 5 Report", size=(50, 15))
+        self.popup_scrolled(msg, title="Top 5 Report")
 
     def propmt_user_for_age_rating(self, valid_values):
         return super().input_specific_int(
@@ -137,10 +137,10 @@ class EventView(GenericView):
 
     def prompt_user_attraction_info(self):
         layout = [
-            [sg.Text("Create Attraction", font=("Helvica", 15))],
-            [sg.Text("Name:"), sg.InputText(key="name")],
-            [sg.Text("Type:"), sg.InputText(key="type")],
-            [sg.Button("Confirm"), sg.Cancel()],
+            [self.header("Create Attraction")],
+            [self.input_title("Name:"), self.input_text(key="name")],
+            [self.input_title("Type:"), self.input_text(key="type")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("New Attraction").Layout(layout)
         button, values = self.read_window()
@@ -152,11 +152,11 @@ class EventView(GenericView):
 
     def prompt_event_info(self):
         layout = [
-            [sg.Text("Create Event", font=("Helvica", 15))],
-            [sg.Text("Name:"), sg.InputText(key="name")],
-            [sg.Text("Description:"), sg.InputText(key="desc")],
-            [sg.Text("Date (DD/MM/YYYY):"), sg.InputText(key="date")],
-            [sg.Button("Confirm"), sg.Cancel()],
+            [self.header("Create Event")],
+            [self.input_title("Name:"), self.input_text(key="name")],
+            [self.input_title("Description:"), self.input_text(key="desc")],
+            [self.input_title("Date (DD/MM/YYYY):"), self.input_text(key="date")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("New Event").Layout(layout)
 
@@ -171,18 +171,18 @@ class EventView(GenericView):
                 self.close()
                 return values["name"], values["desc"], date_obj
             except ValueError:
-                sg.popup("Invalid Date format! Use DD/MM/YYYY")
+                self.popup("Invalid Date format! Use DD/MM/YYYY")
 
     def prompt_event_location_info(self):
         layout = [
-            [sg.Text("Event Location", font=("Helvica", 15))],
-            [sg.Text("Location Name:"), sg.InputText(key="loc_name")],
-            [sg.Text("Street Name:"), sg.InputText(key="street")],
-            [sg.Text("Suite/Number:"), sg.InputText(key="suite")],
-            [sg.Text("Neighborhood:"), sg.InputText(key="neighborhood")],
-            [sg.Text("City:"), sg.InputText(key="city")],
-            [sg.Text("Zip Code:"), sg.InputText(key="zip")],
-            [sg.Button("Confirm"), sg.Cancel()],
+            [self.header("Event Location")],
+            [self.input_title("Location Name:"), self.input_text(key="loc_name")],
+            [self.input_title("Street Name:"), self.input_text(key="street")],
+            [self.input_title("Suite/Number:"), self.input_text(key="suite")],
+            [self.input_title("Neighborhood:"), self.input_text(key="neighborhood")],
+            [self.input_title("City:"), self.input_text(key="city")],
+            [self.input_title("Zip Code:"), self.input_text(key="zip")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("Location Info").Layout(layout)
 

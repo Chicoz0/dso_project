@@ -6,15 +6,15 @@ from views.generic_view import GenericView
 class LoggedUserView(GenericView):
     def show_logged_user_menu(self, username: str):
         layout = [
-            [sg.Text(f"----- User Dashboard {username} -----", font=("Helvica", 25))],
-            [sg.Text("What do you want to do?", font=("Helvica", 15))],
-            [sg.Radio("Browse Events", "RD1", key="1")],
-            [sg.Radio("Manage Connections", "RD1", key="2")],
-            [sg.Radio("Show User info", "RD1", key="3")],
-            [sg.Radio("Edit profile", "RD1", key="4")],
-            [sg.Radio("Delete Account", "RD1", key="5")],
-            [sg.Radio("Exit", "RD1", key="0")],
-            [sg.Button("Confirm "), sg.Cancel("Cancel")],
+            [self.header(f"----- User Dashboard {username} -----")],
+            [self.title("What do you want to do?")],
+            [self.radio("Browse Events", "RD1", key="1")],
+            [self.radio("Manage Connections", "RD1", key="2")],
+            [self.radio("Show User info", "RD1", key="3")],
+            [self.radio("Edit profile", "RD1", key="4")],
+            [self.radio("Delete Account", "RD1", key="5")],
+            [self.radio("Exit", "RD1", key="0")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("EventLink!").Layout(layout)
 
@@ -49,12 +49,12 @@ class LoggedUserView(GenericView):
     # ------ Connection related section -------
     def show_connections_menu(self):
         layout = [
-            [sg.Text(f"----- Connection Menu  -----", font=("Helvica", 25))],
-            [sg.Text("What do you want to do?", font=("Helvica", 15))],
-            [sg.Radio("View Connections", "RD1", key="1")],
-            [sg.Radio("View Pending Connections Request", "RD1", key="2")],
-            [sg.Radio("Send a New Connection Request", "RD1", key="3")],
-            [sg.Button("Confirm "), sg.Cancel("Cancel")],
+            [self.header(f"----- Connection Menu  -----")],
+            [self.title("What do you want to do?")],
+            [self.radio("View Connections", "RD1", key="1")],
+            [self.radio("View Pending Connections Request", "RD1", key="2")],
+            [self.radio("Send a New Connection Request", "RD1", key="3")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("EventLink!").Layout(layout)
 
@@ -80,16 +80,16 @@ class LoggedUserView(GenericView):
         for connection_id, username in connections:
             msg += f"ID: {connection_id} - Username: {username}\n"
 
-        sg.popup_scrolled(msg, title="My Connections", size=(40, 10))
+        self.popup_scrolled(msg, title="My Connections")
 
         return super().input_int("Enter the ID to dismiss (or 0 to return):")
 
-    def show_accepted_connection(
-        self, connection_id: int, user1: str, user2: str
-    ):
-        msg = (f"Connection ID: {connection_id}\n"
-               f"Between: {user1} and {user2}\n\n"
-               f"Do you want to DISMISS (remove) this connection?")
+    def show_accepted_connection(self, connection_id: int, user1: str, user2: str):
+        msg = (
+            f"Connection ID: {connection_id}\n"
+            f"Between: {user1} and {user2}\n\n"
+            f"Do you want to DISMISS (remove) this connection?"
+        )
 
         should_dismiss = super().propmt_user_yes_or_no(msg)
         return 1 if should_dismiss else 0
@@ -103,29 +103,37 @@ class LoggedUserView(GenericView):
         for connection_id, username in requests:
             msg += f"Connection ID: {connection_id} - Username: {username}\n"
 
-        sg.popup_scrolled(msg, title="Pending Requests", size=(40, 10))
+        self.popup_scrolled(msg, title="Pending Requests")
 
-        return super().input_int("Choose an ID to accept/reject, or enter '0' to return.")
+        return super().input_int(
+            "Choose an ID to accept/reject, or enter '0' to return."
+        )
 
     def show_accept_reject_connection_menu(self, username: str):
         layout = [
-            [sg.Text(f"Connection Request from: {username}", font=("Helvica", 15))],
-            [sg.Text("What do you want to do?")],
-            [sg.Button("Accept", key="1"), sg.Button("Reject", key="2"), sg.Button("Return", key="0")]
+            [self.header(f"Connection Request from: {username}")],
+            [self.title("What do you want to do?")],
+            [
+                self.button_key("Accept", key="1"),
+                self.button_key("Reject", key="2"),
+                self.button_key("Return", key="0"),
+            ],
         ]
         self.window = sg.Window("Process Request").Layout(layout)
         button, _ = self.read_window()
         self.close()
 
-        if button in (None, "Return"): 
+        if button in (None, "Return"):
             return 0
         return int(button)
 
     def show_new_connection_request(self):
-        user_username = super().input_string("Enter the username of the user you want to connect with:")
+        user_username = super().input_string(
+            "Enter the username of the user you want to connect with:"
+        )
         if not user_username or user_username == "0":
             return "0"
-            
+
         return user_username
 
     def show_connection_already_exists(self):
@@ -137,11 +145,11 @@ class LoggedUserView(GenericView):
     # ----- Edit Profile related section -----
     def show_edit_profile_menu(self):
         layout = [
-            [sg.Text(f"----- Edit Profile -----", font=("Helvica", 25))],
-            [sg.Radio("Change Username", "RD1", key="1")],
-            [sg.Radio("Change Password", "RD1", key="2")],
-            [sg.Radio("Change Email", "RD1", key="3")],
-            [sg.Button("Confirm "), sg.Cancel("Cancel")],
+            [self.header(f"----- Edit Profile -----")],
+            [self.radio("Change Username", "RD1", key="1")],
+            [self.radio("Change Password", "RD1", key="2")],
+            [self.radio("Change Email", "RD1", key="3")],
+            [self.confirm(), self.cancel()],
         ]
         self.window = sg.Window("EventLink!").Layout(layout)
 
@@ -162,7 +170,9 @@ class LoggedUserView(GenericView):
         return super().input_string("Enter new username: ")
 
     def prompt_new_password(self):
-        password = sg.popup_get_text("Enter your new password:", title="Password Input")
+        password = self.popup_get_text(
+            "Enter your new password:", title="Password Input"
+        )
         return password if password else ""
 
     def prompt_new_email(self):

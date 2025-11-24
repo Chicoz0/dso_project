@@ -4,6 +4,13 @@ from models.user.user import User
 from views.logged_user_view import LoggedUserView
 from DAOs.connection_dao import ConnectionDAO
 
+from exceptions.connection_exceptions import (
+    InvalidConnectionUsersException,
+    UserNotInConnectionException,
+)
+from exceptions.generic_exceptions import NotFoundException
+
+
 class ConnectionController:
     def __init__(self, main_controller):
         self.__main_controller = main_controller
@@ -17,8 +24,12 @@ class ConnectionController:
             if choice == 0:
                 return
             elif choice == 1:
-                user_connections = self.__get_user_connections(self.__main_controller.logged_user, ConnectionStatus.ACCEPTED)
-                con_choice = self.__user_view.show_accepted_connections(user_connections)
+                user_connections = self.__get_user_connections(
+                    self.__main_controller.logged_user, ConnectionStatus.ACCEPTED
+                )
+                con_choice = self.__user_view.show_accepted_connections(
+                    user_connections
+                )
                 if con_choice == 0 or con_choice is None:
                     continue
                 else:
@@ -34,7 +45,7 @@ class ConnectionController:
                     ValueError("Invalid option, please select a number from 0 to 3!")
                 )
 
-    def accept_connection(self, connection_id: str, user: User):
+    def accept_connection(self, connection_id: int, user: User):
         connection = self.__find_connection_by_id(connection_id)
         if not connection:
             self.__user_view.show_connection_not_found(connection_id)
@@ -44,12 +55,10 @@ class ConnectionController:
             connection.accept_request(user)
             self.__connection_dao.update(connection)
             self.__user_view.show_operation_done_message()
-        except ValueError as e:
-            self.__user_view.show_error_message(e)
-        except KeyError as e:
+        except (UserNotInConnectionException, NotFoundException) as e:
             self.__user_view.show_error_message(e)
 
-    def decline_connection(self, connection_id: str, user: User):
+    def decline_connection(self, connection_id: int, user: User):
         connection = self.__find_connection_by_id(connection_id)
         if not connection:
             self.__user_view.show_connection_not_found(connection_id)
@@ -59,18 +68,18 @@ class ConnectionController:
             connection.decline_request(user)
             self.__connection_dao.remove(connection.id)
             self.__user_view.show_operation_done_message()
-        except ValueError as e:
+        except (UserNotInConnectionException, NotFoundException) as e:
             self.__user_view.show_error_message(e)
-        except KeyError as e:
-             self.__user_view.show_error_message(e)
 
     def __handle_pending_requests(self, logged_user: User):
         pending_requests = []
         all_connections = self.__connection_dao.get_all()
 
         for connection in all_connections:
-            if (connection.user2.username == logged_user.username
-                and connection.status == ConnectionStatus.PENDING):
+            if (
+                connection.user2.username == logged_user.username
+                and connection.status == ConnectionStatus.PENDING
+            ):
                 pending_requests.append(connection)
 
         view_data = []
@@ -107,17 +116,21 @@ class ConnectionController:
         while True:
             try:
                 target_username = self.__user_view.show_new_connection_request()
-                if target_username == '0':
+                if target_username == "0":
                     return
 
-                target_user = self.__main_controller.user_controller.find_user_by_username(target_username)
+                target_user = (
+                    self.__main_controller.user_controller.find_user_by_username(
+                        target_username
+                    )
+                )
                 if not target_user:
                     self.__user_view.show_error_message(ValueError("User not found."))
                     continue
 
                 self.create_connection(self.__main_controller.logged_user, target_user)
                 return
-            except ValueError as e:
+            except (InvalidConnectionUsersException, NotFoundException) as e:
                 self.__user_view.show_error_message(e)
                 continue
 
@@ -128,17 +141,23 @@ class ConnectionController:
             self.__user_view.show_connection_not_found(connection_id)
             return
 
-        other_user = (connection.user2 if connection.user1.username == logged_user.username else connection.user1)
+        other_user = (
+            connection.user2
+            if connection.user1.username == logged_user.username
+            else connection.user1
+        )
 
         while True:
-            choice = self.__user_view.show_accepted_connection(connection.id, logged_user.username, other_user.username)
+            choice = self.__user_view.show_accepted_connection(
+                connection.id, logged_user.username, other_user.username
+            )
 
             if choice == 1:
                 try:
                     self.__connection_dao.remove(connection.id)
                     self.__user_view.show_operation_done_message()
-                except KeyError:
-                    self.__user_view.show_error_message(ValueError("Error while trying to remove connection."))
+                except NotFoundException as e:
+                    self.__user_view.show_error_message(e)
                 return
             elif choice == 0:
                 return
@@ -150,8 +169,13 @@ class ConnectionController:
     ) -> Connection | None:
         all_connections = self.__connection_dao.get_all()
         for connection in all_connections:
-            if (connection.user1.username == user1.username and connection.user2.username == user2.username) or (
-                connection.user1.username == user2.username and connection.user2.username == user1.username):
+            if (
+                connection.user1.username == user1.username
+                and connection.user2.username == user2.username
+            ) or (
+                connection.user1.username == user2.username
+                and connection.user2.username == user1.username
+            ):
                 return connection
         return None
 
@@ -166,7 +190,10 @@ class ConnectionController:
         all_connections = self.__connection_dao.get_all()
 
         for connection in all_connections:
-            if (user in [connection.user1, connection.user2] and connection.status == status):
+            if (
+                user in [connection.user1, connection.user2]
+                and connection.status == status
+            ):
                 if user == connection.user1:
                     user_connections.append((connection.id, connection.user2.username))
                 else:
@@ -175,8 +202,7 @@ class ConnectionController:
 
     def create_connection(self, user1: User, user2: User) -> Connection:
         if user1.username == user2.username:
-            self.__user_view.show_error_message(ValueError("Cannot create a connection with yourself."))
-            return
+            raise InvalidConnectionUsersException
 
         existing_connection = self.__get_connection_between_users(user1, user2)
         if existing_connection:

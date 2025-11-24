@@ -2,10 +2,26 @@ from models.user.connection_status import ConnectionStatus
 from models.user.user import User
 from utils.id import generate_id
 
+from exceptions.connection_exceptions import (
+    UserNotInConnectionException,
+    InvalidConnectionUsersException,
+)
+
+
 class Connection:
-    def __init__(self, user1: User, user2: User, status: ConnectionStatus = ConnectionStatus.PENDING):
-        if not isinstance(user1, User) or not isinstance(user2, User) or user1 is None or user2 is None:
-            raise TypeError("Both users must be instances of the User class and not None.")
+    def __init__(
+        self,
+        user1: User,
+        user2: User,
+        status: ConnectionStatus = ConnectionStatus.PENDING,
+    ):
+        if (
+            not isinstance(user1, User)
+            or not isinstance(user2, User)
+            or user1 is None
+            or user2 is None
+        ):
+            raise InvalidConnectionUsersException
         self.__user1 = user1
         self.__user2 = user2
         self.__status = status
@@ -22,17 +38,17 @@ class Connection:
     @property
     def status(self):
         return self.__status
-    
+
     @property
     def id(self):
         return self.__id
 
     def accept_request(self, user: User):
         if user not in [self.__user1, self.__user2]:
-            raise ValueError("Only a user in the connection can accept the request.")   
+            raise UserNotInConnectionException
         self.__status = ConnectionStatus.ACCEPTED
 
     def decline_request(self, user: User):
         if user not in [self.__user1, self.__user2]:
-            raise ValueError("Only a user in the connection can decline the request.")
+            raise UserNotInConnectionException
         self.__status = ConnectionStatus.REJECTED

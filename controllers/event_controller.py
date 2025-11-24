@@ -298,7 +298,7 @@ class EventController:
                         )
                 else:
                     self.__event_view.show_message(
-                        f"No permission to delete with with ID {event.id}"
+                        f"No permission to delete with ID {event.id}"
                     )
             else:
                 self.__event_view.show_message(f"Event with ID {event_id} not found")

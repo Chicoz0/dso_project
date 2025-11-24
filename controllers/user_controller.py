@@ -105,6 +105,8 @@ class UserController:
             return True
         except KeyError:
             return False
+        except NotFoundException:
+            return False
 
     # Checa se um email já existe no database
     def is_email_taken(self, email: str) -> bool:

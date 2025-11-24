@@ -25,12 +25,11 @@ class DAO(ABC):
         self.__dump()
 
     def update(self, key, obj):
-        try:
-            if self.__cache[key] != None:
-                self.__cache[key] = obj
-                self.__dump()
-        except KeyError:
-            raise NotFoundException
+        if key in self.__cache:
+            self.__cache[key] = obj
+            self.__dump()
+        else:
+            raise NotFoundException(f"Item with key {key} not found.")
 
     def get(self, key):
         try:

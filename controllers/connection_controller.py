@@ -55,8 +55,10 @@ class ConnectionController:
             connection.accept_request(user)
             self.__connection_dao.update(connection)
             self.__user_view.show_operation_done_message()
-        except (UserNotInConnectionException, NotFoundException) as e:
+        except UserNotInConnectionException as e:
             self.__user_view.show_error_message(e)
+        except NotFoundException:
+            self.__user_view.show_error_message(ValueError("Connection not found."))
 
     def decline_connection(self, connection_id: int, user: User):
         connection = self.__find_connection_by_id(connection_id)
